@@ -79,6 +79,7 @@
 		var data = undefined;
 		var zoomOn = false;
 		var useLocalPictures = true;
+		var URL_PREFIX = '/ddrm-tools/interactive-build-guide/out/';
 
 		function loadJSON(callback) {
 	    	var xobj = new XMLHttpRequest();
@@ -144,7 +145,7 @@
 
 		function getCurrentPictureUrl(){
 			if (useLocalPictures){
-				return data[currentBoard][currentPicture][1];
+				return URL_PREFIX + data[currentBoard][currentPicture][1];
 			} else {
 				return data[currentBoard][currentPicture][0];
 			}
