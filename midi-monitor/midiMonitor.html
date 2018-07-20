@@ -1,0 +1,142 @@
+<html>
+	<head>
+		<title>Midi Monitor</title>
+		<style>
+			table {table-layout:fixed;}
+			table td {width:140px;}
+
+			.wrapper {
+				width: 850px;
+			}	
+
+			#display{
+				width: 350px;
+				float:left; /* add this */
+			}
+
+			#messageStats {
+				width: 500px;
+				float:right;
+			}		
+		</style>
+		<script type="text/javascript">
+
+			var midiAccess;
+			var midiOutputDeviceID = undefined;
+			var messages = []
+			var N_MESSAGES = 500;
+			var N_MAX_SHOW_MESSAGES = 20;
+
+			function init(){
+				if (navigator.requestMIDIAccess) {
+				    supportMIDI = true;
+				    setupMIDI();
+				} else {
+					var display = document.getElementById("display");
+					display.innerHTML = 'Ouch! WebMIDI is not supported in this browser. Please try with Google Chrome.';
+				}
+			}
+
+			function setupMIDI(){
+				navigator.requestMIDIAccess()
+				    .then(onMIDISuccess, onMIDIFailure);
+
+				function onMIDISuccess(midiAccess_) {
+					midiAccess = midiAccess_;
+					for (var input of midiAccess.inputs.values()){
+				        input.onmidimessage = getMIDIMessage;
+				        console.log('Connected to ', input.name)
+				    }
+				}
+
+				function onMIDIFailure() {
+					var display = document.getElementById("display");
+					display.innerHTML = 'Could not access your MIDI devices.';
+				}
+			}
+
+			function getMIDIMessage(midiMessage) {
+				messages.push(midiMessage);
+				if (messages.length > N_MESSAGES){
+					messages = messages.slice(messages.length - N_MESSAGES, messages.length);
+				}
+				displayMessages();
+			}
+
+			function displayByte1(data){
+				if (data === 176){
+					return 'Control change'
+				} else {
+					return data
+				}
+			}
+
+			function displayByte2(data){
+				return data
+			}
+
+			function displayByte3(data){
+				return data
+			}
+
+			function displayMessages(){
+				var messagesToDisplay = messages.slice(messages.length - N_MAX_SHOW_MESSAGES, messages.length);
+				var html = '<h2>MIDI Monitor</h2><table><tr><td>Message type</td><td>CC number</td><td>CC value</td></tr>';
+				for (var message of messagesToDisplay){
+					html += '<tr><td>' + displayByte1(message.data[0]) + '</td><td>' + displayByte2(message.data[1]) + '</td><td>' + displayByte3(message.data[2]) + '</td></tr>';
+				}
+				html += '</table>';
+				var display = document.getElementById("display");
+			    display.innerHTML = html;
+			    displayMessageStats();
+			}
+
+			function displayMessageStats(){
+				var html = '';
+				var cc_data = {};
+				for (var message of messages){
+					var cc_number = message.data[1];
+					var cc_value = message.data[2];
+					if (!(cc_number in cc_data)){
+						cc_data[cc_number] = [cc_value];
+					} else {
+						cc_data[cc_number].push(cc_value)
+					}
+				}
+				html += '<h2>Stats for last ' + N_MESSAGES + ' received messages</h2>' ;
+				html += 'Distinct CC numbers received: ' +  Object.keys(cc_data).length;
+				html += '<br>Average "amount" of change from one message to the next (per CC number, goes from 0-255):<ul>';
+				for (var cc_number in cc_data){
+					var diffs = [];
+					var prevValue = cc_data[cc_number][0]
+					for (var value of cc_data[cc_number]){
+						diffs.push(Math.abs(prevValue - value));
+					}
+					var sum = 0;
+					for (var diff of diffs){
+						sum += diff;
+					}
+					html += '<li>' + cc_number + ': ' + sum/diffs.length + '</li>';
+				}
+				html += '</ul>';
+
+				var display = document.getElementById("messageStats");
+			    display.innerHTML = html;			
+			}
+
+		</script>
+	</head>
+	<body onload="init();">
+		<div class="wrapper">
+			<div id="display"></div>
+			<div id="messageStats"></div>
+		</div>
+		<br style="clear:both">
+		<br>
+		<ul>
+			<li>Make sure that your DDRM is connected via USB to your computer (or via MIDI cable to a MIDI interface)</li>
+			<li>Move a slider in the DDRM, if you don't see anything here, then it means the tool is not working</li>
+			<li>If you see messages appearing and you're not moving any sliders, then you're experiencing the problem that needs to be fixed</li>
+		</ul>
+	</body>
+</html>

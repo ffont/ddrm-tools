@@ -1,0 +1,142 @@
+<html>
+	<head>
+		<title>Ableton Push2 AT mode selector</title>
+		<style>
+			body {
+				background-color: rgb(63 ,63 ,63);
+				color: white;
+				font-family: 'Helvetica', sans-serif;
+				font-weight: 100;
+				font-style: normal;
+			}
+
+			h1 {text-align: center;margin-bottom:40px;font-weight: 400;}
+
+			.wrapper {
+				margin: auto;
+				width: 770px;
+				padding: 10px;
+			}
+		</style>
+
+		<script type="text/javascript">
+
+			/* MIDI config and functions */
+
+			var midiAccess;
+			var midiOutputDeviceID = undefined;
+
+			function init(){
+				if (navigator.requestMIDIAccess) {
+				    supportMIDI = true;
+				    setupMIDI();
+				} else {
+					var display = document.getElementById("display");
+					display.innerHTML = 'Ouch! WebMIDI is not supported in this browser. Please try with Google Chrome.';
+				}
+			}
+
+			function setupMIDI(){
+				navigator.requestMIDIAccess({
+			        sysex: true
+			    }).then(onMIDISuccess, onMIDIFailure);
+
+				function onMIDISuccess(midiAccess_) {
+
+					midiAccess = midiAccess_;
+				    
+				    // Add list of outputs in select
+				    var midiOutputsSelect = document.getElementById("midiOutputsSelect");
+				    for (var output of midiAccess.outputs.values()){
+				    	var option = document.createElement("option");
+				    	option.text = output.name;
+				    	option.value = output.id;
+				    	midiOutputsSelect.add(option);
+				    	if (midiOutputDeviceID === undefined){
+				    		midiOutputDeviceID = output.id;	// Assign first
+				    	}
+				    }
+
+				    // Bind midi input devices to getMIDIMessage
+				    for (var input of midiAccess.inputs.values()){
+				        input.onmidimessage = getMIDIMessage;
+				    }
+
+				    // Check for poly at mode
+				    if (midiOutputDeviceID !== undefined){
+				    	getAftertouchState();	
+				    }
+				}
+
+				function onMIDIFailure() {
+					var display = document.getElementById("display");
+					display.innerHTML = 'Could not access your MIDI devices.';
+				}
+			}
+
+			function selectMidiDevice(){
+				var outputID = document.getElementById("midiOutputsSelect").value;
+				midiOutputDeviceID = outputID;
+			}
+
+			function setAftertouchChannel(){
+				// Uses sysex message as described in https://github.com/Ableton/push-interface/blob/master/doc/AbletonPush2MIDIDisplayInterface.asc#Aftertouch
+				var output = midiAccess.outputs.get(midiOutputDeviceID);
+				var message = [0xF0, 0x00, 0x21, 0x1D, 0x01, 0x01, 0x1E, 0x00, 0xF7];
+				output.send(message);	
+				getAftertouchState();
+			}
+
+			function setAftertouchPoly(){
+				// Uses sysex message as described in https://github.com/Ableton/push-interface/blob/master/doc/AbletonPush2MIDIDisplayInterface.asc#Aftertouch
+				var output = midiAccess.outputs.get(midiOutputDeviceID);
+				var message = [0xF0, 0x00, 0x21, 0x1D, 0x01, 0x01, 0x1E, 0x01, 0xF7];
+				output.send(message);
+				getAftertouchState();
+			}
+
+			function getAftertouchState(){
+				// Uses sysex message as described in https://github.com/Ableton/push-interface/blob/master/doc/AbletonPush2MIDIDisplayInterface.asc#Aftertouch
+				var output = midiAccess.outputs.get(midiOutputDeviceID);
+				var message = [0xF0, 0x00, 0x21, 0x1D, 0x01, 0x01, 0x1F, 0xF7];
+				output.send(message);
+			}
+
+			function getMIDIMessage(midiMessage) {
+				// Reads sysex message as described in https://github.com/Ableton/push-interface/blob/master/doc/AbletonPush2MIDIDisplayInterface.asc#Aftertouch
+				if (midiMessage.data.length == 9){
+					var at_state_byte = midiMessage.data[7];
+					var display = document.getElementById("display");
+					if (at_state_byte == 0){
+						display.innerHTML = 'Your Push2 is now in <b>channel pressure</b> aftertouch mode.';
+						document.modeSelector.at_mode[0].checked=true;
+					} else if (at_state_byte == 1){
+						display.innerHTML = 'Your Push2 is now in <b>polyphonic</b> aftertouch mode.';
+						document.modeSelector.at_mode[1].checked=true;
+					}
+				}
+			}
+
+		</script>
+	</head>
+	<body onload="init();">
+		<div class="wrapper">
+			<h1>Ableton Push2 AT mode selector</h1>
+			<div>
+				MIDI device connected to Push2: <select id="midiOutputsSelect" onchange="selectMidiDevice();"></select>
+			</div>
+			<br>Choose the Aftertouch mode you want:
+			<form name="modeSelector">
+				<br><input type="radio" name="at_mode" value="channel" onclick="setAftertouchChannel()"> Channel pressure
+				<br><input type="radio" name="at_mode" value="poly" onclick="setAftertouchPoly()"> Polyphonic
+			</form>
+			<br>
+			<div id="display"></div>
+			<p>Notes
+				<li>Select <i>Ableton Push2 Live Port</i> or <i>Ableton Push2 User Port</i> MIDI interface</li>
+				<li>You should see one of the two modes selected by default</li>
+				<li>After changing mode, you should see the text confirming the change, otherwise it did not work</li>
+			</p>
+		</div>
+	</body>
+</html>
