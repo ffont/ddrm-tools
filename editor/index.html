@@ -1,0 +1,71 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+<title>DDRM control tool</title>
+<style type='text/css'>
+	body { font-family: sans-serif; }
+	select { width: 100%; }
+</style>
+<script src='https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.1/tabletop.min.js'></script>
+<script type='text/javascript' src='constants.js'></script>
+<script type='text/javascript' src='components.js'></script>
+<script type='text/javascript' src='midi.js'></script>
+<script type='text/javascript' src='store.js'></script>
+<script type='text/javascript'>
+
+	function init(){
+		initMIDI(document.getElementById("midiSettings"));
+
+		ONLINE_STORE = new GoogleSpreadsheetStore(
+		    scriptURL="https://script.google.com/macros/s/AKfycbxdlE7J-VHEfSAEtj-MtA_MptxmtiMUWTbRU9oaU3zaZ-cSptW-/exec", 
+		    spreadsheetURL="https://docs.google.com/spreadsheets/d/10FpFlL8FKWJzRu2La21AdD-nhivl-7agzHNiIhQ5Llg/edit?usp=sharing");
+
+		LOCAL_STORE = new LocalStore();
+
+		PRESET_MANAGER = new PresetManager();
+		drawPresetControls();
+		drawPresetManagerControls();
+		
+		
+		PRESET_MANAGER.loadLocalAndOnlinePresets(function(){
+			if (PRESET_MANAGER.currentPreset === undefined) {
+				PRESET_MANAGER.setCurrentPresetToFirstPreset();
+				drawPresetControls();
+                drawPresetManagerControls();
+            }            
+		});
+	}
+
+</script>
+</head>
+<body onload="init();">
+
+	<div style="float:right;padding:20px;">
+
+		<!-- MIDI -->
+		<div id="midiSettings"></div>
+
+		<br>
+		<!-- bank file selector -->
+		Load presets from bank file:
+		<form action='#' onsubmit="return false;">
+		<input type='file' id='fileinput'>
+		<br><input type='button' id='btnLoad' value='Load' onclick='loadBankFile();'>
+		</form>
+
+		<br>
+		<!-- Bank -->
+		<div id="presetManagerControls"></div>
+
+	</div>
+
+	<div style="padding:20px;">
+
+		<!-- Synth -->
+		<div id="synthControls"></div>
+
+	</div>
+
+</body>
+</html>
