@@ -1,0 +1,300 @@
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Deckard's Dream Interactive Build Guide</title>
+	<style>
+		body {
+			margin: 0;
+			padding: 0;
+			font-family: "Helvetica", Sans-Serif;
+			max-width: 100%;
+			height: 100%;
+		}
+
+		h1 {
+			font-size: 24px;
+		}
+
+		#spinner {
+			position: absolute;
+			z-index: -1;
+			margin-left: 50%;
+			margin-top: 40px; 		
+		}
+
+		#image {
+			position: absolute;
+		}
+
+		#label_element_wrapper {
+			display:block;
+			position:absolute;
+			bottom:0;
+			width: 100%;
+			background-color: rgba(0,0,0,0.6);
+			padding-top: 10px;
+			font-size: 24px;
+			text-align: center;
+			z-index: 30;
+			color:white;
+		}
+
+		#description_element {
+			padding: 10px;
+			font-size: 14px;
+		}
+
+		#menu {
+			font-size: 14px!important;
+			display:block;
+			position:absolute;
+			right:0;
+			top:0;
+			min-width: 100px;
+			min-height: 30px;
+			font-size: 16px;
+			text-align: right;
+			z-index: 30;
+			background-color: rgba(0,0,0,0.1);
+			padding: 10px;
+			padding-top:0px;
+		}
+
+		#menu ul {
+			list-style: none;
+		}
+
+		.display_none {
+			display:none!important;
+		}
+	
+	</style>
+
+	<script type="text/javascript" src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/elevatezoom/3.0.8/jquery.elevatezoom.min.js" type="text/javascript"></script>
+	<script type="text/javascript">
+
+		var currentBoard = undefined;
+		var currentPicture = 0;
+		var data = undefined;
+		var zoomOn = false;
+		var useLocalPictures = true;
+
+		function loadJSON(callback) {
+	    	var xobj = new XMLHttpRequest();
+		    xobj.overrideMimeType("application/json");
+		    xobj.open('GET', 'index.json', true);
+		    xobj.onreadystatechange = function() {
+		        if (xobj.readyState === 4 && xobj.status == "200") { callback(xobj.responseText); }
+		    };
+		    xobj.send(null);
+		}
+
+		function hideLens(){
+			var elms = document.getElementsByClassName('zoomLens');
+			for(i=0; i<elms.length; i++) {
+				elms[i].classList.add('display_none');
+			}
+		}
+
+		function showLens(){
+			var elms = document.getElementsByClassName('zoomLens');
+			for(i=0; i<elms.length; i++) {
+				elms[i].classList.remove('display_none');
+			}
+		}
+
+		function toggleZoom(){
+			if (zoomOn){
+				zoomOn = false;
+				hideLens();
+			} else{
+				zoomOn = true;
+				showLens();
+			}
+		}
+
+		function getPixelColor() {
+			if (useLocalPictures){
+				// Real pixel value can only be retrieved when using local pictures
+				// Otherwise there are CORS problems and I don't have control over the
+				// pictures served in www.deckardsdream.com website
+				var img = document.getElementById('img_element');
+				var canvas = document.createElement('canvas');
+				var context = canvas.getContext('2d');
+				canvas.width = img.width;
+				canvas.height = img.height;
+				context.drawImage(img, 0, 0, img.width, img.height);
+				var x = img.width - 1;
+				var y = img.height - 1;
+				return context.getImageData(x, y, 1, 1).data;
+			} else {
+				return [255, 255, 255, 255];
+			}
+		}
+
+		function setBackgroundColorToMatchImage(url){
+			var pixelValue = getPixelColor();
+			r = pixelValue[0];
+			g = pixelValue[1];
+			b = pixelValue[2];
+			a = pixelValue[3];
+			document.body.style.backgroundColor = "rgba(" + r + "," + g + "," + b + "," + a + ")";
+		}
+
+		function getCurrentPictureUrl(){
+			if (useLocalPictures){
+				return data[currentBoard][currentPicture][1];
+			} else {
+				return data[currentBoard][currentPicture][0];
+			}
+		}
+
+		function getCurrentPictureDescription(){
+			return data[currentBoard][currentPicture][2];
+		}
+
+		function resizePicture(){
+			var imgElement = document.getElementById('img_element');
+			var w = window.innerWidth;
+				var h = window.innerHeight;				
+				imgElement.style.width = w;
+				imgElement.style.height = 'auto';
+				if (imgElement.height > h){
+					imgElement.style.height = h;
+					imgElement.style.width = 'auto';
+				}
+		}
+
+		function showPicture() {
+
+			var labelElement = document.getElementById('label_element');
+			var imgElement = document.getElementById('img_element');
+			var descriptionElement = document.getElementById('description_element');
+			
+			// Set image
+			imgElement.src = '';
+			var imgSrc = getCurrentPictureUrl();
+			imgElement.src = imgSrc;
+
+			// Set label and description
+			labelElement.innerHTML = currentBoard + ' [' + (currentPicture + 1) + '/' + data[currentBoard].length + ']';
+			var description = getCurrentPictureDescription();
+			if (description !== undefined) {
+				descriptionElement.innerHTML = description;
+			}
+
+			imgElement.onload = function() {
+				// When image is loaded, set background color and zoom
+		    	setBackgroundColorToMatchImage(imgSrc);
+		    	resizePicture();
+		    	$(".zoomContainer").remove();
+		    	$("#img_element").elevateZoom({
+				  zoomType: "lens",
+				  lensShape: "round",
+				  lensSize: 600,
+				  lensFadeIn: 200,
+				  scrollZoom: true,
+				});
+				setTimeout(function(){
+					if (zoomOn == false){
+						hideLens();
+					} else {
+						showLens();
+					}
+				},50);  // For some reason need to delay the show/hide lens function to take effect
+		    }
+		}
+
+		function nextPicture() {
+			var maxPicturesBoard = data[currentBoard].length;
+			if (currentPicture + 1 < maxPicturesBoard){
+				currentPicture = currentPicture + 1;
+				showPicture();
+			} else {
+				alert('No more pictures for this board')
+			}
+		}
+
+		function previousPicture() {
+			if (currentPicture - 1 >= 0){
+				currentPicture = currentPicture - 1;
+				showPicture();
+			} else {
+				alert('No more pictures for this board')
+			}
+		}
+
+		function setBoard(board) {
+			currentBoard = board;
+			currentPicture = 0;
+			showPicture();
+		}
+
+		function checkKey(e) {
+		    e = e || window.event;
+		    if (e.keyCode == '37') { // left arrow
+		       previousPicture();
+		    }
+		    else if (e.keyCode == '39') { // right arrow
+		       nextPicture();
+		    }
+		    else if (e.keyCode == '90') { // z
+		       toggleZoom();
+		    }
+		}
+
+		(function(){
+		   loadJSON(function(response) {
+		   		// Load JSON with index of pictures
+		        data = JSON.parse(response);
+
+		        // Set some variables
+		        currentBoard = Object.keys(data)[0];
+		        zoomOn = false;
+
+		        // Add li elements for different boards
+		        var ul = document.getElementById("menu_ul");
+		        for (i in Object.keys(data)){
+		        	var board = Object.keys(data)[i];
+		        	var li = document.createElement("li");
+		        	li.innerHTML = '<a href="javascript:void(0);" onclick="setBoard(\'' + board + '\')">' + board + '</a>';
+		        	ul.appendChild(li);
+		        }
+
+		        // Show first picture
+		        showPicture();
+		    });
+
+		   // Bind events
+		   document.onkeydown = checkKey;
+		   window.addEventListener('resize', function(event){
+			  resizePicture();
+		   });
+		})()
+	</script>
+</head>
+<body>
+
+<div id="spinner">
+	<img src="http://zanstra.home.xs4all.nl/_p/apple/spinner.bax-shop.nl.gif"/>
+</div>
+<div id="image">
+	<img id="img_element" />
+</div>
+
+<div id="label_element_wrapper">
+	<div id="label_element"></div>
+	<div id="description_element"></div>
+</div>
+
+<div id="menu">
+	<h1>Deckard's Dream<br> interactive build guide <br>(beta version)</h1>
+	Choose a section from the list below.
+	<br>Use <b>left/right arrow keys</b> to navigate.
+	<br>Press <b>z</b> to toggle zoom lens.
+	<ul id="menu_ul">
+	</ul>
+</div>
+</body>
+</html>
