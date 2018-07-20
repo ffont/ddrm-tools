@@ -95,15 +95,58 @@ function sendMIDIControlChange(ccNumber, value){
         var output = midiAccess.outputs.get(midiOutputDeviceID);
         var message = [0xB0, ccNumber, value];  // Channel 1 only (TODO: support other channels)
         output.send(message);
-        console.log('Sent MIDI CC message with bytes: ' + message.data);   
+        console.log('Sent MIDI CC message to: ', ccNumber, value);   
     }
 }
 
-function getMIDIMessage(message) {
+LAST_RECEIVED_CC_VALUES = {};
+FILTER_THRESHOLD = 5;
+BUFFER_LENGTH = 10;
+function shouldPassMessage(cc_number, cc_value){    
+    var pass;
+
+    if (!(cc_number in LAST_RECEIVED_CC_VALUES)){
+        LAST_RECEIVED_CC_VALUES[cc_number] = [];
+        pass = false;  // Don't pass first time message for a cc_number is received
+    } else {
+        var lastReceivedValues = LAST_RECEIVED_CC_VALUES[cc_number];
+        var difference = Math.abs(lastReceivedValues[0] - lastReceivedValues[lastReceivedValues.length - 1]);
+        if (difference >= FILTER_THRESHOLD){
+            // Only if the difference with the value of previous Nth message is higher than threshold
+            // Consecutive messages always have difference 0 or 1, so we have to test with Nth previous one
+            // If message values were oscillating quickly this could become a problem, but because sliders
+            // are only moved mechanically this filtering works ok.
+            pass = true;
+        } else {
+            pass = false;
+        }
+    }
+    LAST_RECEIVED_CC_VALUES[cc_number].push(cc_value);
+    if (LAST_RECEIVED_CC_VALUES[cc_number].length > BUFFER_LENGTH){
+        LAST_RECEIVED_CC_VALUES[cc_number] = LAST_RECEIVED_CC_VALUES[cc_number].slice(LAST_RECEIVED_CC_VALUES[cc_number].length - BUFFER_LENGTH);
+    }
+    return pass;
+}
+
+function midiMessageIsControlChange(message){
+    return message.data[0] === 176;
+}
+
+function getMIDIMessage(message){
     if (message.target.id === midiInputDeviceID){  // Only process messages from selected input
-        console.log('Received MIDI message with bytes: ' + message.data);
-        if (PRESET_MANAGER.currentPreset){
-            PRESET_MANAGER.currentPreset.receiveMIDI(message);    
+
+        var allowMessage = true;
+        if (midiMessageIsControlChange(message)){
+            // Apply filtering due to bug in Deckard's Dream MIDI out (sliders jitter)
+            allowMessage = shouldPassMessage(message.data[1], message.data[2])
+        }
+        if (allowMessage){
+            console.log('Received MIDI message with bytes: ' + message.data);
+            if (PRESET_MANAGER.currentPreset){
+                PRESET_MANAGER.currentPreset.receiveMIDI(message);    
+            }
+        } else {
+            //console.log('Discarded message')
         }
     }
 }

@@ -133,8 +133,21 @@ function Preset(name, author, categories, timestamp, id) {
         } 
     }
     this.receiveMIDI = function(message) {
-        console.log(`Preset received MIDI message: ${message}`);
-        // TODO: implement that function, find to which value it corresponds and set it (without sending MIDI to avoid possible feedback loop)
+        var messageType = message.data[0];
+        if (midiMessageIsControlChange(message)){
+            var messageCC = message.data[1];
+            var messageValue = message.data[2] * 2;  // Scale value to  0-255 range
+            for (var control of self.controls){
+                if (control.midiCC === messageCC){
+                    control.setValue(messageValue, false);
+                }   
+            }
+            // TODO: this lookup could be optimized by having an index mapping cc number with 
+            // control objects and avoid the for loop
+
+            drawPresetControls();
+            // TODO: optimize this by only updating corresponding slider
+        }
     }
     this.save = function(remove, store) {
         var data = {};

@@ -29,7 +29,7 @@ var CONTROLS_STRUCTURE = {
         ],
         'VCF': [
             {'name': 'HPF B', 'type': 'slider', 'midiCC': 73, 'byteNumber': 29},
-            {'name': 'RESh B', 'type': 'slider', 'midiCC': 118, 'byteNumber': 30},
+            {'name': 'RESh B', 'type': 'slider', 'midiCC': 119, 'byteNumber': 30},
             {'name': 'LPF B', 'type': 'slider', 'midiCC': 75, 'byteNumber': 31},
             {'name': 'RESl B', 'type': 'slider', 'midiCC': 76, 'byteNumber': 32}
         ],
