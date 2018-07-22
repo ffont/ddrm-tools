@@ -4,6 +4,9 @@
 var midiAccess;
 var midiOutputDeviceID = undefined;
 var midiInputDeviceID = undefined;
+var midiChannel = 0;
+var CONTROL_CHANGE_MIDI_VALUE = 176;
+var PROGRAM_CHANGE_MIDI_VALUE = 192;
 
 function initMIDI(controlsElement){
 
@@ -70,8 +73,22 @@ function initMIDI(controlsElement){
             }
         }
 
+        var midiChannelSelect = document.createElement("select");
+        midiChannelSelect.id = 'midiChannelSelect';
+        midiChannelSelect.onchange = function(){
+            midiChannel = parseInt(document.getElementById("midiChannelSelect").value, 10);
+        };
+
+        for (var i=0; i<16; i++){
+            var option = document.createElement("option");
+            option.text = i + 1;
+            option.value = i;
+            midiChannelSelect.add(option);
+        }
+
         midiOutputControlsDiv.appendChild(midiOutputsLabel)
         midiOutputControlsDiv.appendChild(midiOutputsSelect)
+        midiOutputControlsDiv.appendChild(midiChannelSelect)
         controlsElement.appendChild(midiOutputControlsDiv)        
     }
 
@@ -80,22 +97,26 @@ function initMIDI(controlsElement){
     }
 }
 
-function sendMIDIProgramChange(pcNumber){
+function sendMIDIProgramChange(pcNumber, channel){
     // http://www.onicos.com/staff/iz/formats/midi-event.html
+
+    if (channel === undefined){ channel = midiChannel; }
     if (pcNumber !== undefined && midiOutputDeviceID !== undefined){
         var output = midiAccess.outputs.get(midiOutputDeviceID);
-        var message = [0xC0, pcNumber];  // Channel 1 only (TODO: support other channels)
+        var message = [PROGRAM_CHANGE_MIDI_VALUE + channel, pcNumber];  // Channel 1 only (TODO: support other channels)
         output.send(message);   
     }
 }
 
-function sendMIDIControlChange(ccNumber, value){
+function sendMIDIControlChange(ccNumber, value, channel){
     // http://www.onicos.com/staff/iz/formats/midi-event.html
+
+    if (channel === undefined){ channel = midiChannel; }
     if (ccNumber !== undefined && midiOutputDeviceID !== undefined){
         var output = midiAccess.outputs.get(midiOutputDeviceID);
-        var message = [0xB0, ccNumber, value];  // Channel 1 only (TODO: support other channels)
+        var message = [CONTROL_CHANGE_MIDI_VALUE + channel, ccNumber, value];
         output.send(message);
-        console.log('Sent MIDI CC message to: ', ccNumber, value);   
+        console.log(`Sent MIDI CC message to ch${channel + 1} ${ccNumber} ${value} `);   
     }
 }
 
@@ -129,7 +150,7 @@ function shouldPassMessage(cc_number, cc_value){
 }
 
 function midiMessageIsControlChange(message){
-    return message.data[0] === 176;
+    return (message.data[0] >= CONTROL_CHANGE_MIDI_VALUE && message.data[0] < CONTROL_CHANGE_MIDI_VALUE + 16);
 }
 
 function getMIDIMessage(message){
