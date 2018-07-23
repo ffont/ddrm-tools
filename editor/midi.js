@@ -163,8 +163,8 @@ function getMIDIMessage(message){
         }
         if (allowMessage){
             console.log('Received MIDI message with bytes: ' + message.data);
-            if (PRESET_MANAGER.currentPreset){
-                PRESET_MANAGER.currentPreset.receiveMIDI(message);    
+            if (PRESET_MANAGER.currentPreset && midiMessageIsControlChange(message)){
+                PRESET_MANAGER.currentPreset.receiveControlChange(message.data[1], message.data[2]);    
             }
         } else {
             //console.log('Discarded message')

@@ -118,12 +118,35 @@ function Control(name, section, type, midiCC, byteNumber, displayValueFuncName) 
     this.postDraw = function() {
         // Do things needed post-draw like setting up sliders
         if (self.type === CONTROL_TYPE_SLIDER){
-            var slider = new Slider(`#${self.inputElementID}`, {
+            self.sliderUI = new Slider(`#${self.inputElementID}`, {
                 formatter: function(value) {
                     return self.displayValueFunc(self.getValue(), self.getMIDIValue(), self.getNormValue());
                 }
             });
-            slider.setValue(self.getValue());
+            self.sliderUI.setValue(self.getValue());
+        }
+    }
+    this.updateUI = function() {
+        if (self.type === CONTROL_TYPE_SLIDER){
+            self.sliderUI.setValue(self.getValue());
+
+        } else if (self.type === CONTROL_TYPE_SWITCH_OFF_ON){
+            var switchOffOn = document.getElementById(self.inputElementID);
+            if (self.getMIDIValue() >= 65){  // Follow DDRM MIDI spec
+                switchOffOn.selectedIndex = 0;  // Set to Off
+            } else {
+                switchOffOn.selectedIndex = 1;  // Set to On
+            }
+
+        } else if (self.type === CONTROL_TYPE_GLIDE_MODE){
+            var switchGlideMode = document.getElementById(self.inputElementID);
+            if (self.getMIDIValue() < 32){ // Follow DDRM MIDI spec
+                switchGlideMode.selectedIndex = 0;  // Set to Portamento
+            } else if (self.getMIDIValue() >= 32 && self.getMIDIValue() < 85){
+                switchGlideMode.selectedIndex = 1;  // Set to None
+            } else if (self.getMIDIValue() >= 85){
+                switchGlideMode.selectedIndex = 2;  // Set to Glissando
+            }
         }
     }
     this.oninput = function() {
@@ -207,6 +230,7 @@ function Preset(name, author, categories, timestamp, id) {
     this.timestamp = timestamp;
     this.storeName;  // Here we will save provenance of preset (from which store it was loaded)
     this.controls = [];
+    this.midiCCLookup = {};
     
     this.init = function(byteValues) {
         self.controls = [];
@@ -223,6 +247,7 @@ function Preset(name, author, categories, timestamp, id) {
                 control.setValueFromPresetBytes(byteValues);
             }
             self.controls.push(control);
+            self.midiCCLookup[controlDef.midi] = control;
         }
     }
     this.getControlValuesAsBytes = function(){
@@ -251,22 +276,10 @@ function Preset(name, author, categories, timestamp, id) {
             control.sendMIDI();
         } 
     }
-    this.receiveMIDI = function(message) {
-        var messageType = message.data[0];
-        if (midiMessageIsControlChange(message)){
-            var messageCC = message.data[1];
-            var messageValue = message.data[2] * 2;  // Scale value to  0-255 range
-            for (var control of self.controls){
-                if (control.midiCC === messageCC){
-                    control.setValue(messageValue, false);
-                }   
-            }
-            // TODO: this lookup could be optimized by having an index mapping cc number with 
-            // control objects and avoid the for loop
-
-            drawPresetControls();
-            // TODO: optimize this by only updating corresponding slider
-        }
+    this.receiveControlChange = function(ccNumber, ccValue) {
+        var control = self.midiCCLookup[ccNumber];
+        control.setValue(ccValue * 2, false);  // Scale value to  0-255 range
+        control.updateUI();
     }
     this.save = function(remove, store) {
         var data = {};
