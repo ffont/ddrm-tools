@@ -5,10 +5,11 @@
 <title>DDRM Online Editor</title>
 <style type='text/css'>
 	body { font-family: sans-serif; }
-	select { width: 100%; }
+	#sideBar select { width: 100%; }
 </style>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.1/tabletop.min.js'></script>
 <script type='text/javascript' src='constants.js'></script>
+<script type='text/javascript' src='utils.js'></script>
 <script type='text/javascript' src='components.js'></script>
 <script type='text/javascript' src='midi.js'></script>
 <script type='text/javascript' src='store.js'></script>
@@ -41,7 +42,7 @@
 </head>
 <body onload="init();">
 
-	<div style="float:right;padding:20px;">
+	<div id="sideBar" style="float:right;padding:20px;">
 
 		<!-- MIDI -->
 		<div id="midiSettings"></div>

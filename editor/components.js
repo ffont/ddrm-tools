@@ -1,4 +1,8 @@
 /* FileBank, Preset and Control classes */
+CONTROL_TYPE_SLIDER = 'slider';
+CONTROL_TYPE_SWITCH_OFF_ON = 'switchOffOn';
+CONTROL_TYPE_GLIDE_MODE = 'glideMode';
+
 
 function Control(name, section, type, midiCC, byteNumber) {
     var self = this;
@@ -36,7 +40,7 @@ function Control(name, section, type, midiCC, byteNumber) {
         var controlDiv = document.createElement("div");
         controlDiv.className = 'control';
 
-        if (type === 'slider'){
+        if (type === CONTROL_TYPE_SLIDER){
             var slider = document.createElement("input");
             slider.type = 'range';
             slider.min = "0";
@@ -44,25 +48,123 @@ function Control(name, section, type, midiCC, byteNumber) {
             slider.value = self.getValue();
             slider.id = self.inputElementID;
             slider.oninput = self.oninput;
+            controlDiv.append(slider);
 
-            var label = document.createElement("label");
-            label.innerHTML = self.name + ' - ' + self.section;
-            label.htmlFor = self.inputElementID;
-            controlDiv.append(slider)
-            controlDiv.append(label)
+        } else if (type === CONTROL_TYPE_SWITCH_OFF_ON){
+            var switchOffOn = document.createElement("select");
+            switchOffOn.id = self.inputElementID;
+            var optionOn = document.createElement("option");
+            optionOn.text = 'On';
+            optionOn.value = 0;
+            var optionOff = document.createElement("option");
+            optionOff.text = 'Off';
+            optionOff.value = 255;
+            switchOffOn.add(optionOff);
+            switchOffOn.add(optionOn);
+            if (self.getMIDIValue() >= 65){  // Follow DDRM MIDI spec
+                switchOffOn.selectedIndex = 0;  // Set to Off
+            } else {
+                switchOffOn.selectedIndex = 1;  // Set to On
+            }
+            switchOffOn.onchange = self.oninput;  // TODO: find a way to fire this even when value has not changed            
+            controlDiv.append(switchOffOn);
+
+        } else if (type === CONTROL_TYPE_GLIDE_MODE){
+            var switchGlideMode = document.createElement("select");
+            switchGlideMode.id = self.inputElementID;
+            var optionPortamento = document.createElement("option");
+            optionPortamento.text = 'Portamento';
+            optionPortamento.value = 0;
+            var optionNone = document.createElement("option");
+            optionNone.text = 'None';
+            optionNone.value = 127;
+            var optionGlissando = document.createElement("option");
+            optionGlissando.text = 'Glissando';
+            optionGlissando.value = 255;
+            switchGlideMode.add(optionPortamento);
+            switchGlideMode.add(optionNone);
+            switchGlideMode.add(optionGlissando);
+            if (self.getMIDIValue() < 32){ // Follow DDRM MIDI spec
+                switchGlideMode.selectedIndex = 0;  // Set to Portamento
+            } else if (self.getMIDIValue() >= 32 && self.getMIDIValue() < 85){
+                switchGlideMode.selectedIndex = 1;  // Set to None
+            } else if (self.getMIDIValue() >= 85){
+                switchGlideMode.selectedIndex = 2;  // Set to Glissando
+            }
+            switchGlideMode.onchange = self.oninput;  // TODO: find a way to fire this even when value has not changed
+            controlDiv.append(switchGlideMode);
+
+        } else {
+            // If no control type is specified, return undefined (and draw nothing)
+            return undefined;
         }
+
+        var label = document.createElement("label");
+        label.innerHTML = self.name + ' - ' + self.section;
+        label.htmlFor = self.inputElementID;
+        controlDiv.append(label)
 
         return controlDiv;
     }
     this.oninput = function() {
         var value = document.getElementById(self.inputElementID).value;
-        self.setValue(value, true); // When users move sliders, send MIDI values as well
+        self.setValue(value, true); // When users move virtual sliders, send MIDI values as well
     }
     this.setValue = function(value, sendMIDI) {
         self.value = value;
         if (sendMIDI === true) { 
             self.sendMIDI(); 
         }
+    }
+    this.setValueFromPresetBytes = function(byteValues){
+        if (self.type === CONTROL_TYPE_GLIDE_MODE){
+            // This is a special case for the GLIDE MODE control which uses two byte values instead of one
+            // TODO: if more special cases appear we should consider using better strategies here like implementing
+            // different control behaviours using inheritance
+            // Glissando mode: b72=255 & b80=0 -> portamento, b72=0 & b80=255 -> glissando, b72=0 & b80 = 0 -> none
+            // This behaviour is hardcoded here...
+
+            var portamentoOn = byteValues[72] > 127;
+            var glissandoOn = byteValues[80] > 127;
+
+            if (portamentoOn && !glissandoOn){
+                self.setValue(0, false); // Portamento on
+            } else if (!portamentoOn && glissandoOn){
+                self.setValue(255, false);  // Glissando on
+            } else {
+                // If both off or both on, we consider non is active
+                self.setValue(127, false); // Both off
+            }
+        } else {
+            // That's the normal case in which each control has an assigned byte position from which to load a value
+            self.setValue(byteValues[self.byteNumber], false);  // Don't send MIDI out
+        }
+    }
+    this.writeToPresetBytesArray = function(byteValues){
+        if (self.type === CONTROL_TYPE_GLIDE_MODE){
+            // This is a special case for the GLIDE MODE control which uses two byte values instead of one
+            // TODO: if more special cases appear we should consider using better strategies here like implementing
+            // different control behaviours using inheritance
+            // Glissando mode: b72=255 & b80=0 -> portamento, b72=0 & b80=255 -> glissando, b72=255 & b80=255 -> none
+            // This behaviour is hardcoded here...
+            if (self.getMIDIValue() < 32){ // Follow DDRM MIDI spec
+                // Set to Portamento
+                byteValues[72] = 255;
+                byteValues[80] = 0;
+            } else if (self.getMIDIValue() >= 32 && self.getMIDIValue() < 85){
+                // Set to None
+                byteValues[72] = 255;
+                byteValues[80] = 255;
+            } else if (self.getMIDIValue() >= 85){
+                // Set to glissando
+                byteValues[72] = 0;
+                byteValues[80] = 255;
+            }
+        } else {
+            // That's the normal case in which each control has an assigned byte position to which the value is written
+            byteValues[self.byteNumber] = self.getValue();
+        }
+        return byteValues;
     }
     this.sendMIDI = function() {
         if (self.midiCC) {
@@ -88,19 +190,12 @@ function Preset(name, author, categories, timestamp, id) {
     
     this.init = function(byteValues) {
         self.controls = [];
-        for (var mainSectionKey of Object.keys(CONTROLS_STRUCTURE)){
-            var mainSection = CONTROLS_STRUCTURE[mainSectionKey];
-            for (var sectionKey of Object.keys(mainSection)){
-                var section = mainSection[sectionKey];
-                for (var i in section){
-                    var controlDef = section[i];
-                    var control = new Control(controlDef.name, sectionKey, controlDef.type, controlDef.midiCC, controlDef.byteNumber)
-                    if (byteValues !== undefined){
-                        control.setValue(byteValues[control.byteNumber], false); // Load value but don't send MIDI
-                    }
-                    self.controls.push(control);
-                }
+        for (var controlDef of CONTROLS_STRUCTURE){
+            var control = new Control(controlDef.name, controlDef.section, controlDef.type, controlDef.midi, controlDef.byte)
+            if (byteValues !== undefined){
+                control.setValueFromPresetBytes(byteValues);
             }
+            self.controls.push(control);
         }
     }
     this.getControlValuesAsBytes = function(){
@@ -112,11 +207,8 @@ function Preset(name, author, categories, timestamp, id) {
         }
 
         // Fill in bytes per controls
-        // TODO: deal with controls that use more than one byte?
         for (var control of self.controls){
-            if (control.byteNumber){
-                bytes[control.byteNumber] = control.getValue(); 
-            }   
+            bytes = control.writeToPresetBytesArray(bytes);
         }
 
         // Render array as HEX byte string
@@ -508,7 +600,10 @@ function drawPresetControls(){
     controlsElement.appendChild(presetNameDiv);
     controlsElement.appendChild(document.createElement("br"));
     for (var control of preset.controls){
-        controlsElement.appendChild(control.draw());
+        var htmlElements = control.draw();
+        if (htmlElements !== undefined){
+            controlsElement.appendChild(htmlElements);    
+        }
     }        
 }
 
