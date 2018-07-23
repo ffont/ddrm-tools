@@ -7,7 +7,13 @@
 	body { font-family: sans-serif; }
 	#sideBar select { width: 100%; }
 </style>
-<script src='https://cdnjs.cloudflare.com/ajax/libs/tabletop.js/1.5.1/tabletop.min.js'></script>
+<link rel="stylesheet" href="3rdparty/bootstrap.min.css">
+<link rel="stylesheet" href="3rdparty/bootstrap-slider.min.css">
+
+<script type='text/javascript' src='3rdparty/jquery.min.js'></script>  <!-- needed for bootstrap js -->
+<script type='text/javascript' src='3rdparty/tabletop.min.js'></script>
+<script type='text/javascript' src='3rdparty/bootstrap.min.js'></script>
+<script type='text/javascript' src='3rdparty/bootstrap-slider.min.js'></script>
 <script type='text/javascript' src='constants.js'></script>
 <script type='text/javascript' src='utils.js'></script>
 <script type='text/javascript' src='components.js'></script>
@@ -27,7 +33,6 @@
 		PRESET_MANAGER = new PresetManager();
 		drawPresetControls();
 		drawPresetManagerControls();
-		
 		
 		PRESET_MANAGER.loadLocalAndOnlinePresets(function(){
 			if (PRESET_MANAGER.currentPreset === undefined) {

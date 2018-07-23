@@ -4,7 +4,7 @@ CONTROL_TYPE_SWITCH_OFF_ON = 'switchOffOn';
 CONTROL_TYPE_GLIDE_MODE = 'glideMode';
 
 
-function Control(name, section, type, midiCC, byteNumber) {
+function Control(name, section, type, midiCC, byteNumber, displayValueFuncName) {
     var self = this;
     this.name = name;
     this.section = section;
@@ -14,7 +14,12 @@ function Control(name, section, type, midiCC, byteNumber) {
     this.value = 0;
     this.midiCC = midiCC;
     this.byteNumber = byteNumber;
-    this.inputElementID = 'id-' + name.replace(' ', '_') + '-' + section.replace(' ', '_');
+    if (displayValueFuncName !== ''){
+        this.displayValueFunc = window[displayValueFuncName];
+    } else {
+        this.displayValueFunc = rangeDefault;
+    }
+    this.inputElementID = `id-${name.replace(' ', '_')}-${section.replace(' ', '_')}-${midiCC}`;
     
     this.getValue = function() {
         /* Get int value in original range (0-255) */
@@ -40,17 +45,21 @@ function Control(name, section, type, midiCC, byteNumber) {
         var controlDiv = document.createElement("div");
         controlDiv.className = 'control';
 
-        if (type === CONTROL_TYPE_SLIDER){
+        if (self.type === CONTROL_TYPE_SLIDER){
             var slider = document.createElement("input");
-            slider.type = 'range';
-            slider.min = "0";
-            slider.max = "255";
-            slider.value = self.getValue();
+            slider.type = 'text';
             slider.id = self.inputElementID;
-            slider.oninput = self.oninput;
+            slider.value = self.getValue();
+            self.dataSliderID = self.inputElementID + '-Slider';
+            slider.setAttribute('data-slider-id', self.dataSliderID);
+            slider.setAttribute('data-slider-min', self.valueMin);
+            slider.setAttribute('data-slider-max', self.valueMax);
+            slider.setAttribute('data-slider-step', 1);
+            slider.setAttribute('data-slider-value', self.getValue());
+            slider.onchange = self.oninput;
             controlDiv.append(slider);
 
-        } else if (type === CONTROL_TYPE_SWITCH_OFF_ON){
+        } else if (self.type === CONTROL_TYPE_SWITCH_OFF_ON){
             var switchOffOn = document.createElement("select");
             switchOffOn.id = self.inputElementID;
             var optionOn = document.createElement("option");
@@ -69,7 +78,7 @@ function Control(name, section, type, midiCC, byteNumber) {
             switchOffOn.onchange = self.oninput;  // TODO: find a way to fire this even when value has not changed            
             controlDiv.append(switchOffOn);
 
-        } else if (type === CONTROL_TYPE_GLIDE_MODE){
+        } else if (self.type === CONTROL_TYPE_GLIDE_MODE){
             var switchGlideMode = document.createElement("select");
             switchGlideMode.id = self.inputElementID;
             var optionPortamento = document.createElement("option");
@@ -105,6 +114,17 @@ function Control(name, section, type, midiCC, byteNumber) {
         controlDiv.append(label)
 
         return controlDiv;
+    }
+    this.postDraw = function() {
+        // Do things needed post-draw like setting up sliders
+        if (self.type === CONTROL_TYPE_SLIDER){
+            var slider = new Slider(`#${self.inputElementID}`, {
+                formatter: function(value) {
+                    return self.displayValueFunc(self.getValue(), self.getMIDIValue(), self.getNormValue());
+                }
+            });
+            slider.setValue(self.getValue());
+        }
     }
     this.oninput = function() {
         var value = document.getElementById(self.inputElementID).value;
@@ -191,7 +211,14 @@ function Preset(name, author, categories, timestamp, id) {
     this.init = function(byteValues) {
         self.controls = [];
         for (var controlDef of CONTROLS_STRUCTURE){
-            var control = new Control(controlDef.name, controlDef.section, controlDef.type, controlDef.midi, controlDef.byte)
+            var control = new Control(
+                controlDef.name, 
+                controlDef.section, 
+                controlDef.type, 
+                controlDef.midi, 
+                controlDef.byte,
+                controlDef.displayValueFuncName,
+            )
             if (byteValues !== undefined){
                 control.setValueFromPresetBytes(byteValues);
             }
@@ -604,7 +631,8 @@ function drawPresetControls(){
         if (htmlElements !== undefined){
             controlsElement.appendChild(htmlElements);    
         }
-    }        
+        control.postDraw();
+    }     
 }
 
 /* Reading bank files */
