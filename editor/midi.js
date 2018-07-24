@@ -142,7 +142,7 @@ function sendMIDIProgramChange(pcNumber, channel){
 function sendMIDIControlChange(ccNumber, ccValue, channel){
     if (channel === undefined) { channel = midiChannel };
     if (midiOutputDevice !== undefined){
-        midiOutputDevice.sendControlChange(ccNumber, ccValue, channel);
+        midiOutputDevice.sendControlChange(ccNumber - 1, ccValue, channel);
         console.log(`Sent MIDI CC message to ch${channel} ${ccNumber} ${ccValue}`);
     }
 }

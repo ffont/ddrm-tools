@@ -31,6 +31,10 @@ function drawPresetManagerControls() {
     presetListSelect.onchange = function(){
         PRESET_MANAGER.setCurrentPresetFromID(presetListSelect.value);
         drawPresetControls();
+        if (document.getElementById('idSendToSynthOnSelect').checked){
+            // If "send to synth on preset select is checked, send MIDI"
+            PRESET_MANAGER.currentPreset.sendMIDI();
+        }
     };
 
     var selectLabel = document.createElement("label");
@@ -42,7 +46,11 @@ function drawPresetManagerControls() {
     nextButton.onclick = function(){
         presetListSelect.selectedIndex += 1;
         PRESET_MANAGER.setCurrentPresetFromID(presetListSelect.value);  
-        drawPresetControls();      
+        drawPresetControls();
+        if (document.getElementById('idSendToSynthOnSelect').checked){
+            // If "send to synth on preset select is checked, send MIDI"
+            PRESET_MANAGER.currentPreset.sendMIDI();
+        }
     }
 
     var prevButton = document.createElement("button");
@@ -51,7 +59,15 @@ function drawPresetManagerControls() {
         presetListSelect.selectedIndex -= 1;
         PRESET_MANAGER.setCurrentPresetFromID(presetListSelect.value);
         drawPresetControls();
+        if (document.getElementById('idSendToSynthOnSelect').checked){
+            // If "send to synth on preset select is checked, send MIDI"
+            PRESET_MANAGER.currentPreset.sendMIDI();
+        }
     }
+
+    var sendToSynthOnSelectDiv = document.createElement("div");
+    sendToSynthOnSelectDiv.className = 'checkbox';
+    sendToSynthOnSelectDiv.innerHTML = '<label><input id="idSendToSynthOnSelect" type="checkbox" value="" checked="checked">Send to synth on preset change</label>';
 
     controlsElement.appendChild(selectLabel);
     controlsElement.appendChild(document.createElement("br"));
@@ -59,6 +75,8 @@ function drawPresetManagerControls() {
     controlsElement.appendChild(document.createElement("br"));
     controlsElement.appendChild(prevButton);
     controlsElement.appendChild(nextButton);
+    
+    controlsElement.appendChild(sendToSynthOnSelectDiv);   
 }
 
 
