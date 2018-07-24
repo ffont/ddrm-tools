@@ -111,7 +111,10 @@ function drawPresetControls(){
     var saveOnlineButton = document.createElement("button");
     saveOnlineButton.innerHTML = 'Save online';
     saveOnlineButton.onclick = function(){
-        PRESET_MANAGER.currentPreset.save(false, ONLINE_STORE);
+        blockUI();
+        PRESET_MANAGER.currentPreset.save(false, ONLINE_STORE, function(){
+            unblockUI();
+        });
     };
 
     var deleteOnlineButton = document.createElement("button");
@@ -154,4 +157,18 @@ function drawPresetControls(){
         }
         control.postDraw();
     }     
+}
+
+function blockUI(){
+    var blockUI = document.createElement("div");
+    blockUI.id = "uiBlocker";
+    blockUI.innerHTML = '<div>Saving...<img src="http://www.socialups.com/static/images/fbinventory/ajax_loader.gif"></div>'
+    document.body.appendChild(blockUI);
+}
+
+function unblockUI(){
+    var blockUI = document.getElementById("uiBlocker");
+    if (blockUI !== null){
+        document.body.removeChild(blockUI);    
+    }
 }

@@ -281,7 +281,7 @@ function Preset(name, author, categories, timestamp, id) {
         control.setValue(ccValue * 2, false);  // Scale value to  0-255 range
         control.updateUI();
     }
-    this.save = function(remove, store) {
+    this.save = function(remove, store, callback) {
         var data = {};
         var toDelete = remove === true;
 
@@ -330,6 +330,9 @@ function Preset(name, author, categories, timestamp, id) {
                 }
                 drawPresetControls();
                 drawPresetManagerControls();
+                if (callback !== undefined){
+                    callback(); // Call callback if provided
+                }
             });
         });
     }
