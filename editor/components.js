@@ -89,13 +89,13 @@ function Control(name, section, channel, color, type, midiCC, byteNumber, displa
             var switchGlideMode = document.createElement("select");
             switchGlideMode.id = self.inputElementID;
             var optionPortamento = document.createElement("option");
-            optionPortamento.text = 'Portamento';
+            optionPortamento.text = 'P';
             optionPortamento.value = 0;
             var optionNone = document.createElement("option");
-            optionNone.text = 'None';
+            optionNone.text = '-';
             optionNone.value = 127;
             var optionGlissando = document.createElement("option");
-            optionGlissando.text = 'Glissando';
+            optionGlissando.text = 'G';
             optionGlissando.value = 255;
             switchGlideMode.add(optionPortamento);
             switchGlideMode.add(optionNone);
@@ -115,10 +115,13 @@ function Control(name, section, channel, color, type, midiCC, byteNumber, displa
             return undefined;
         }
 
+        var labelDiv = document.createElement("div");
+        labelDiv.className = 'labelDiv';
         var label = document.createElement("label");
-        label.innerHTML = self.name + ' - ' + self.section;
+        label.innerHTML = self.name + '<br>' + self.section;
         label.htmlFor = self.inputElementID;
-        controlDiv.append(label)
+        labelDiv.append(label);
+        controlDiv.append(labelDiv)
 
         return controlDiv;
     }
@@ -127,7 +130,7 @@ function Control(name, section, channel, color, type, midiCC, byteNumber, displa
         if (self.type === CONTROL_TYPE_SLIDER){
             self.sliderUI = new Slider(`#${self.inputElementID}`, {
                 formatter: function(value) {
-                    return `${self.name} - ${self.displayValueFunc(self.getValue(), self.getMIDIValue(), self.getNormValue())}`;
+                    return `${self.displayValueFunc(self.getValue(), self.getMIDIValue(), self.getNormValue())}`;
                 }
             });
             self.sliderUI.setValue(self.getValue());

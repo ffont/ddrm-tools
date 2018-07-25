@@ -2,8 +2,18 @@ body {
 	font-family: sans-serif; 
 }
 	
+#sideBar {
+	float: right;
+	padding:20px;
+	height: 100%;
+}
+
 #sideBar select { 
-	width: 100%; 
+	width: 100%;
+}
+
+#controlsPanel {
+	padding:20px;
 }
 
 #uiBlocker {
@@ -45,18 +55,18 @@ body {
 
 #mainControlsWrapper .controlsRow .control {
 	display: inline-block;
+	position: relative;
 	width: 60px;
-	height: 140px;
-	background-color: red;
-	padding-top: 20px;
-	padding-bottom: 20px;
-	padding-left: 20px;
-	padding-right: 20px;
+	height: 155px;
 	margin: 4px;
+	margin-bottom: 8px;
+	vertical-align: top;
+	text-align: center;
 }
 
 #mainControlsWrapper .controlsRow .control .slider.slider-vertical {
 	height: 100px;
+	margin-top: 10px;
 }
 
 #mainControlsWrapper .controlsRow .control .slider.slider-vertical .slider-selection {
@@ -68,39 +78,38 @@ body {
 }
 
 #mainControlsWrapper .controlsRow .control.redColor .slider-handle {
-	background: red;
+	background: rgb(190, 60, 55);
 }
 
 #mainControlsWrapper .controlsRow .control.greenColor .slider-handle {
-	background: green;
+	background: rgb(47, 110, 90);
 }
 
 #mainControlsWrapper .controlsRow .control.yellowColor .slider-handle {
-	background: yellow;
+	background: rgb(255, 246, 116);
 }
 
 #mainControlsWrapper .controlsRow .control.grayColor .slider-handle {
-	background: gray;
+	background: rgb(230, 230, 230);
 }
 
 #mainControlsWrapper .controlsRow .control.blackColor .slider-handle {
-	background: black;
+	background: rgb(0, 0, 0);
 }
 
 #mainControlsWrapper .controlsRow .control.whiteColor .slider-handle {
-	background: white;
+	background: rgb(250, 250, 250);
 }
 
-#mainControlsWrapper .controlsRow .control label {
-	display: none;
-	/*
-	font-size: 8px;
-    position: absolute;
-    margin-left: -40px;
-    margin-top: 120px;
-    width: 60px;
-    padding: 0px;
-    text-align: center;
-    overflow: hidden;
-    */
+#mainControlsWrapper .controlsRow .control select {
+	margin-top: 60px;
+}
+
+#mainControlsWrapper .controlsRow .control .labelDiv {
+	font-size: 9px;
+	position: absolute;
+	bottom: 0px;
+	width: 60px;
+	height: 30px;
+	overflow: hidden;
 }
