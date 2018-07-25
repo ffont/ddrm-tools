@@ -34,3 +34,73 @@ body {
     top: -55px;
     left: 15%;
 }
+
+#mainControlsWrapper {
+	overflow: scroll;
+}
+
+#mainControlsWrapper .controlsRow {
+	white-space: nowrap;
+}
+
+#mainControlsWrapper .controlsRow .control {
+	display: inline-block;
+	width: 60px;
+	height: 140px;
+	background-color: red;
+	padding-top: 20px;
+	padding-bottom: 20px;
+	padding-left: 20px;
+	padding-right: 20px;
+	margin: 4px;
+}
+
+#mainControlsWrapper .controlsRow .control .slider.slider-vertical {
+	height: 100px;
+}
+
+#mainControlsWrapper .controlsRow .control .slider.slider-vertical .slider-selection {
+	background: #ccc;
+}
+
+#mainControlsWrapper .controlsRow .control .slider.slider-vertical .slider-track {
+	background: #ccc;
+}
+
+#mainControlsWrapper .controlsRow .control.redColor .slider-handle {
+	background: red;
+}
+
+#mainControlsWrapper .controlsRow .control.greenColor .slider-handle {
+	background: green;
+}
+
+#mainControlsWrapper .controlsRow .control.yellowColor .slider-handle {
+	background: yellow;
+}
+
+#mainControlsWrapper .controlsRow .control.grayColor .slider-handle {
+	background: gray;
+}
+
+#mainControlsWrapper .controlsRow .control.blackColor .slider-handle {
+	background: black;
+}
+
+#mainControlsWrapper .controlsRow .control.whiteColor .slider-handle {
+	background: white;
+}
+
+#mainControlsWrapper .controlsRow .control label {
+	display: none;
+	/*
+	font-size: 8px;
+    position: absolute;
+    margin-left: -40px;
+    margin-top: 120px;
+    width: 60px;
+    padding: 0px;
+    text-align: center;
+    overflow: hidden;
+    */
+}

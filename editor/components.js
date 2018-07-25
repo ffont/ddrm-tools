@@ -4,10 +4,12 @@ const CONTROL_TYPE_SWITCH_OFF_ON = 'switchOffOn';
 const CONTROL_TYPE_GLIDE_MODE = 'glideMode';
 const N_BYTES_PER_BANK = 98;
 
-function Control(name, section, type, midiCC, byteNumber, displayValueFuncName) {
+function Control(name, section, channel, color, type, midiCC, byteNumber, displayValueFuncName) {
     var self = this;
     this.name = name;
     this.section = section;
+    this.channel = channel;
+    this.color = color;
     this.type = type;
     this.valueMin = 0;
     this.valueMax = 255;
@@ -44,6 +46,9 @@ function Control(name, section, type, midiCC, byteNumber, displayValueFuncName) 
     this.draw = function() {
         var controlDiv = document.createElement("div");
         controlDiv.className = 'control';
+        if (self.color !== ''){
+            controlDiv.className += ` ${self.color}Color`;
+        }
 
         if (self.type === CONTROL_TYPE_SLIDER){
             var slider = document.createElement("input");
@@ -56,6 +61,8 @@ function Control(name, section, type, midiCC, byteNumber, displayValueFuncName) 
             slider.setAttribute('data-slider-max', self.valueMax);
             slider.setAttribute('data-slider-step', 1);
             slider.setAttribute('data-slider-value', self.getValue());
+            slider.setAttribute('data-slider-reversed', true);
+            slider.setAttribute('data-slider-orientation', 'vertical');
             slider.onchange = self.oninput;
             controlDiv.append(slider);
 
@@ -120,7 +127,7 @@ function Control(name, section, type, midiCC, byteNumber, displayValueFuncName) 
         if (self.type === CONTROL_TYPE_SLIDER){
             self.sliderUI = new Slider(`#${self.inputElementID}`, {
                 formatter: function(value) {
-                    return self.displayValueFunc(self.getValue(), self.getMIDIValue(), self.getNormValue());
+                    return `${self.name} - ${self.displayValueFunc(self.getValue(), self.getMIDIValue(), self.getNormValue())}`;
                 }
             });
             self.sliderUI.setValue(self.getValue());
@@ -238,6 +245,8 @@ function Preset(name, author, categories, timestamp, id) {
             var control = new Control(
                 controlDef.name, 
                 controlDef.section, 
+                controlDef.channel,
+                controlDef.color,
                 controlDef.type, 
                 controlDef.midi, 
                 controlDef.byte,

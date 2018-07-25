@@ -92,6 +92,7 @@ function drawPresetControls(){
         return;
     }
 
+    // Add preset name and main action buttons
     var presetNameDiv = document.createElement("div");
     presetNameDiv.innerHTML = `<h2>${preset.name}</h2>`;
     if (preset.author){
@@ -101,13 +102,11 @@ function drawPresetControls(){
         presetNameDiv.innerHTML += `${preset.timestamp.toString().split(' GMT')[0]} `;
     }
     presetNameDiv.innerHTML += `(${preset.id})`;
-
     var sendMIDIButton = document.createElement("button");
     sendMIDIButton.innerHTML = 'Send to Synth';
     sendMIDIButton.onclick = function(){
         PRESET_MANAGER.currentPreset.sendMIDI();
     };
-
     var saveOnlineButton = document.createElement("button");
     saveOnlineButton.innerHTML = 'Save online';
     saveOnlineButton.onclick = function(){
@@ -116,7 +115,6 @@ function drawPresetControls(){
             unblockUI();
         });
     };
-
     var deleteOnlineButton = document.createElement("button");
     deleteOnlineButton.innerHTML = 'Delete online';
     deleteOnlineButton.onclick = function(){
@@ -125,13 +123,11 @@ function drawPresetControls(){
     if (preset.storeName !== ONLINE_STORE.name){
         deleteOnlineButton.disabled = true;
     }
-
     var saveLocalButton = document.createElement("button");
     saveLocalButton.innerHTML = 'Save local';
     saveLocalButton.onclick = function(){
         PRESET_MANAGER.currentPreset.save(false, LOCAL_STORE);
     };
-
     var deleteLocalButton = document.createElement("button");
     deleteLocalButton.innerHTML = 'Delete local';
     deleteLocalButton.onclick = function(){
@@ -140,23 +136,47 @@ function drawPresetControls(){
     if (preset.storeName !== LOCAL_STORE.name){
         deleteLocalButton.disabled = true;
     }
-
     presetNameDiv.appendChild(document.createElement("br"));
     presetNameDiv.appendChild(sendMIDIButton);
     presetNameDiv.appendChild(saveOnlineButton);
     presetNameDiv.appendChild(deleteOnlineButton);
     presetNameDiv.appendChild(saveLocalButton);
     presetNameDiv.appendChild(deleteLocalButton);
-
     controlsElement.appendChild(presetNameDiv);
     controlsElement.appendChild(document.createElement("br"));
+
+    // Add main synth controls
+    mainControlsWrapper = document.createElement("div");
+    mainControlsWrapper.id = 'mainControlsWrapper';
+    channel1Controls = document.createElement("div");
+    channel1Controls.id = 'channel1Controls';
+    channel1Controls.className = 'controlsRow';
+    channel2Controls = document.createElement("div");
+    channel2Controls.id = 'channel2Controls';
+    channel2Controls.className = 'controlsRow';
+    noChannelControls = document.createElement("div");
+    noChannelControls.id = 'noChannelControls';
+    noChannelControls.className = 'controlsRow';
     for (var control of preset.controls){
-        var htmlElements = control.draw();
-        if (htmlElements !== undefined){
-            controlsElement.appendChild(htmlElements);    
+        var controlHtmlElements = control.draw();
+        if (controlHtmlElements !== undefined){
+            if (control.channel === 1){
+                channel1Controls.appendChild(controlHtmlElements);
+            } else if (control.channel === 2){
+                channel2Controls.appendChild(controlHtmlElements);
+            } else if (control.channel === null){
+                noChannelControls.appendChild(controlHtmlElements);
+            }
         }
+    }
+    mainControlsWrapper.appendChild(channel1Controls);
+    mainControlsWrapper.appendChild(channel2Controls);
+    mainControlsWrapper.appendChild(noChannelControls);
+    controlsElement.appendChild(mainControlsWrapper);
+    for (var control of preset.controls){
+        // Do the postDraw() after controls have been added to DOM
         control.postDraw();
-    }     
+    }
 }
 
 function blockUI(){
