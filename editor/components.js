@@ -365,7 +365,7 @@ function FileBank(name) {
         }
         for (var i in bankBytes){
             var presetBytes = bankBytes[i];
-            self.addPreset('Preset #' + i.toString(), presetBytes, i);
+            self.addPreset('Preset #' + (i + 1).toString(), presetBytes, i);
         }
         console.log(self.presets.length + ' presets loaded from bank ' + self.name);
     }
