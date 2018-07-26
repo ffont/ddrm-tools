@@ -22,6 +22,7 @@
 
 	function init(){
 		initMIDI(document.getElementById("midiSettings"));
+		autoAdjustUIScaleFactor();
 
 		ONLINE_STORE = new GoogleSpreadsheetStore(
 		    scriptURL="https://script.google.com/macros/s/AKfycbxdlE7J-VHEfSAEtj-MtA_MptxmtiMUWTbRU9oaU3zaZ-cSptW-/exec", 

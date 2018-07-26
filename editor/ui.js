@@ -1,5 +1,25 @@
 var SYNTH_UI_SCALE_FACTOR = 1.00;
+var MIN_SCALE_FACTOR = 0.65;
+var MAX_SCALE_FACTOR = 1.0;
 
+function autoAdjustUIScaleFactor(){
+    var maxControlsInRow = 0;
+    for (var controlDef of CONTROLS_STRUCTURE){
+        if (controlDef.layoutRow === 1){
+            maxControlsInRow += 1;
+        }
+    }
+    var maxWidth = document.getElementById('synthControls').offsetWidth;
+    var controlWidth = maxWidth/(maxControlsInRow + 3.2);
+    var newScaleFactor = controlWidth/CONTROL_WIDTH;
+    if (newScaleFactor < MIN_SCALE_FACTOR){
+        SYNTH_UI_SCALE_FACTOR = MIN_SCALE_FACTOR;
+    } else if (newScaleFactor > MAX_SCALE_FACTOR){
+        SYNTH_UI_SCALE_FACTOR = MAX_SCALE_FACTOR;
+    } else {
+        SYNTH_UI_SCALE_FACTOR = newScaleFactor;
+    }
+}
 
 /* UI drawing */
 
