@@ -9,6 +9,12 @@ function guid() {
   return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 }
 
+function roundToN(value, N){
+	if (N === undefined){
+		N = 2;
+	}
+	return Math.round(Math.pow(10, N) * value) / Math.pow(10, N);
+}
 
 /* util functions to display control values */
 // TODO: implement these range functions
@@ -18,35 +24,51 @@ function rangeDefault(value, midiValue, normValue){
 }
 
 function range10(value, midiValue, normValue){
-	return `${Math.round(10*normValue)}`;
+	return `${roundToN(10 * normValue)}`;
+}
+
+function rangeSlowFast(value, midiValue, normValue){
+	return range10(value, midiValue, normValue);
 }
 
 function rangePW(value, midiValue, normValue){
-	return value;
+	return `${roundToN(100 * ((normValue * 0.4) + 0.5), 0)}%`;
 }
 
 function rangeLowHigh(value, midiValue, normValue){
-	return value;
+	return range10(value, midiValue, normValue);
 }
 
 function rangeIL(value, midiValue, normValue){
-	return value;
+	return `${roundToN(-5 * normValue)}`;
 }
 
 function rangeAL(value, midiValue, normValue){
-	return value;
+	return `${roundToN(5 * normValue)}`;
 }
 
 function rangeShortLong(value, midiValue, normValue){
-	return value;
+	return range10(value, midiValue, normValue);
 }
 
 function rangeDetune(value, midiValue, normValue){
-	return value;
+	return `${roundToN((normValue - 0.5) * 2 * -100)}%`;
 }
 
 function rangeFeet(value, midiValue, normValue){
-	return value;
+	if (midiValue >= 0 && midiValue < 22){
+		return `16'`;
+	} else if (midiValue >= 22 && midiValue < 43){
+		return `8'`;
+	} else if (midiValue >= 43 && midiValue < 64){
+		return `5 1/3'`;
+	} else if (midiValue >= 64 && midiValue < 85){
+		return `4'`;
+	} else if (midiValue >= 85 && midiValue < 106){
+		return `2 2/3'`;
+	} else if (midiValue >= 106 && midiValue < 128){
+		return `2'`;
+	}
 }
 
 function rangeFunction(value, midiValue, normValue){
@@ -59,14 +81,14 @@ function rangeFunction(value, midiValue, normValue){
 	} else if (midiValue >= 64 && midiValue < 85){
 		return `Sqr`;
 	} else if (midiValue >= 85 && midiValue < 106){
-		return `RND`;
+		return `Rnd`;
 	} else if (midiValue >= 106 && midiValue < 128){
-		return `EXT`;
+		return `Ext`;
 	}
 }
 
 function rangeNone(value, midiValue, normValue){
-	return value;
+	range10(value, midiValue, normValue);
 }
 
 function rangeMix(value, midiValue, normValue){
