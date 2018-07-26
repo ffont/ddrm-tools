@@ -8,6 +8,8 @@ const CONTROL_HEIGHT = 155;
 const SLIDER_HEIGHT = 100;
 const CONTROL_LABEL_HEIGHT = 30;
 const CONTROL_LABEL_FONT_SIZE = 9;
+const SWITCH2_HEIGHT = 25;
+const SWITCH3_HEIGHT = 40;
 
 function Control(name, section, layoutRow, color, type, midiCC, byteNumber, displayValueFuncName) {
     var self = this;
@@ -77,49 +79,37 @@ function Control(name, section, layoutRow, color, type, midiCC, byteNumber, disp
             controlDiv.append(slider);
 
         } else if (self.type === CONTROL_TYPE_SWITCH_OFF_ON){
-            var switchOffOn = document.createElement("select");
-            switchOffOn.id = self.inputElementID;
-            switchOffOn.style['margin-top'] = `${Math.round(((CONTROL_HEIGHT - CONTROL_LABEL_HEIGHT) / 2)  * SYNTH_UI_SCALE_FACTOR)}px`;
-            var optionOn = document.createElement("option");
-            optionOn.text = 'On';
-            optionOn.value = 0;
-            var optionOff = document.createElement("option");
-            optionOff.text = 'Off';
-            optionOff.value = 255;
-            switchOffOn.add(optionOff);
-            switchOffOn.add(optionOn);
-            if (self.getMIDIValue() >= 65){  // Follow DDRM MIDI spec
-                switchOffOn.selectedIndex = 0;  // Set to Off
-            } else {
-                switchOffOn.selectedIndex = 1;  // Set to On
-            }
-            switchOffOn.onchange = self.oninput;  // TODO: find a way to fire this even when value has not changed            
-            controlDiv.append(switchOffOn);
+            var sliderOffOn = document.createElement("input");
+            sliderOffOn.type = 'text';
+            sliderOffOn.id = self.inputElementID;
+            sliderOffOn.value = self.getValue();
+            self.dataSliderID = self.inputElementID + '-SliderOffOn';
+            sliderOffOn.setAttribute('data-slider-id', self.dataSliderID);
+            sliderOffOn.setAttribute('data-slider-min', self.valueMin);
+            sliderOffOn.setAttribute('data-slider-max', self.valueMax);
+            sliderOffOn.setAttribute('data-slider-step', 255);
+            sliderOffOn.setAttribute('data-slider-handle', 'square');
+            sliderOffOn.setAttribute('data-slider-value', self.getValue());
+            sliderOffOn.setAttribute('data-slider-reversed', true);
+            sliderOffOn.setAttribute('data-slider-orientation', 'vertical');
+            sliderOffOn.onchange = self.oninput;
+            controlDiv.append(sliderOffOn);
 
         } else if (self.type === CONTROL_TYPE_GLIDE_MODE){
-            var switchGlideMode = document.createElement("select");
+            var switchGlideMode = document.createElement("input");
+            switchGlideMode.type = 'text';
             switchGlideMode.id = self.inputElementID;
-            switchGlideMode.style['margin-top'] = `${Math.round(((CONTROL_HEIGHT - CONTROL_LABEL_HEIGHT) / 2)  * SYNTH_UI_SCALE_FACTOR)}px`;
-            var optionPortamento = document.createElement("option");
-            optionPortamento.text = 'P';
-            optionPortamento.value = 0;
-            var optionNone = document.createElement("option");
-            optionNone.text = '-';
-            optionNone.value = 127;
-            var optionGlissando = document.createElement("option");
-            optionGlissando.text = 'G';
-            optionGlissando.value = 255;
-            switchGlideMode.add(optionPortamento);
-            switchGlideMode.add(optionNone);
-            switchGlideMode.add(optionGlissando);
-            if (self.getMIDIValue() < 32){ // Follow DDRM MIDI spec
-                switchGlideMode.selectedIndex = 0;  // Set to Portamento
-            } else if (self.getMIDIValue() >= 32 && self.getMIDIValue() < 85){
-                switchGlideMode.selectedIndex = 1;  // Set to None
-            } else if (self.getMIDIValue() >= 85){
-                switchGlideMode.selectedIndex = 2;  // Set to Glissando
-            }
-            switchGlideMode.onchange = self.oninput;  // TODO: find a way to fire this even when value has not changed
+            switchGlideMode.value = self.getValue();
+            self.dataSliderID = self.inputElementID + '-SliderOffOn';
+            switchGlideMode.setAttribute('data-slider-id', self.dataSliderID);
+            switchGlideMode.setAttribute('data-slider-min', self.valueMin);
+            switchGlideMode.setAttribute('data-slider-max', self.valueMax);
+            switchGlideMode.setAttribute('data-slider-step', 127);
+            switchGlideMode.setAttribute('data-slider-handle', 'square');
+            switchGlideMode.setAttribute('data-slider-value', self.getValue());
+            switchGlideMode.setAttribute('data-slider-reversed', true);
+            switchGlideMode.setAttribute('data-slider-orientation', 'horizontal');
+            switchGlideMode.onchange = self.oninput;
             controlDiv.append(switchGlideMode);
 
         } else {
@@ -149,9 +139,28 @@ function Control(name, section, layoutRow, color, type, midiCC, byteNumber, disp
                 }
             });
             self.sliderUI.setValue(self.getValue());
-            console.log(self.sliderUI)
             self.sliderUI.sliderElem.style['height'] = `${Math.round(SLIDER_HEIGHT * SYNTH_UI_SCALE_FACTOR)}px`;
-            //self.sliderUI.sliderElem.style['margin-top'] = `${Math.round(SLIDER_HEIGHT * 0.1 * SYNTH_UI_SCALE_FACTOR)}px`;
+        } else if (self.type === CONTROL_TYPE_SWITCH_OFF_ON){
+
+            self.sliderUI = new Slider(`#${self.inputElementID}`, {
+                formatter: function(value) {
+                    return `${self.displayValueFunc(self.getValue(), self.getMIDIValue(), self.getNormValue())}`;
+                }
+            });
+            self.sliderUI.setValue(self.getValue());
+            self.sliderUI.sliderElem.style['height'] = `${SWITCH2_HEIGHT}px`; // NOTE: don't scale here //`${Math.round(SWITCH2_HEIGHT * SYNTH_UI_SCALE_FACTOR)}px`;
+            self.sliderUI.sliderElem.style['margin-top'] = '50%';
+
+        } else if (self.type === CONTROL_TYPE_GLIDE_MODE){
+
+            self.sliderUI = new Slider(`#${self.inputElementID}`, {
+                formatter: function(value) {
+                    return `${self.displayValueFunc(self.getValue(), self.getMIDIValue(), self.getNormValue())}`;
+                }
+            });
+            self.sliderUI.setValue(self.getValue());
+            self.sliderUI.sliderElem.style['width'] = `${SWITCH3_HEIGHT}px`; // NOTE: don't scale here //`${Math.round(SWITCH2_HEIGHT * SYNTH_UI_SCALE_FACTOR)}px`;
+            self.sliderUI.sliderElem.style['margin-top'] = '60%';
         }
     }
     this.updateUI = function() {

@@ -1,4 +1,4 @@
-var SYNTH_UI_SCALE_FACTOR = 0.65;
+var SYNTH_UI_SCALE_FACTOR = 1.00;
 
 
 /* UI drawing */

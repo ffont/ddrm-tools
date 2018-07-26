@@ -62,15 +62,11 @@ body {
 	/* size attributes are set on JS */
 }
 
-#mainControlsWrapper .controlsRow .control .slider.slider-vertical {
-	/* size attributes are set on JS */
-}
-
-#mainControlsWrapper .controlsRow .control .slider.slider-vertical .slider-selection {
+#mainControlsWrapper .controlsRow .control .slider .slider-selection {
 	background: #ccc;
 }
 
-#mainControlsWrapper .controlsRow .control .slider.slider-vertical .slider-track {
+#mainControlsWrapper .controlsRow .control .slider .slider-track {
 	background: #ccc;
 }
 

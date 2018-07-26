@@ -76,5 +76,19 @@ function rangeMix(value, midiValue, normValue){
 }
 
 function rangeGlideMode(value, midiValue, normValue){
-	return value;
+	if (midiValue < 32){ // Follow DDRM MIDI spec
+        return 'Portamento';
+    } else if (midiValue >= 32 && midiValue < 85){
+        return 'None';
+    } else if (midiValue >= 85){
+        return 'Glissando';
+    }
+}
+
+function rangeOnOff(value, midiValue, normValue){
+	if (normValue <= 0.5){
+		return 'ON';
+	} else {
+		return 'OFF';
+	}
 }
