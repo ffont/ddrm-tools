@@ -1,3 +1,6 @@
+var SYNTH_UI_SCALE_FACTOR = 0.65;
+
+
 /* UI drawing */
 
 function drawPresetManagerControls() {
@@ -160,11 +163,11 @@ function drawPresetControls(){
     for (var control of preset.controls){
         var controlHtmlElements = control.draw();
         if (controlHtmlElements !== undefined){
-            if (control.channel === 1){
+            if (control.layoutRow === 1){
                 channel1Controls.appendChild(controlHtmlElements);
-            } else if (control.channel === 2){
+            } else if (control.layoutRow === 2){
                 channel2Controls.appendChild(controlHtmlElements);
-            } else if (control.channel === null){
+            } else if (control.layoutRow === 3){
                 noChannelControls.appendChild(controlHtmlElements);
             }
         }

@@ -3,12 +3,17 @@ const CONTROL_TYPE_SLIDER = 'slider';
 const CONTROL_TYPE_SWITCH_OFF_ON = 'switchOffOn';
 const CONTROL_TYPE_GLIDE_MODE = 'glideMode';
 const N_BYTES_PER_BANK = 98;
+const CONTROL_WIDTH = 60;
+const CONTROL_HEIGHT = 155;
+const SLIDER_HEIGHT = 100;
+const CONTROL_LABEL_HEIGHT = 30;
+const CONTROL_LABEL_FONT_SIZE = 9;
 
-function Control(name, section, channel, color, type, midiCC, byteNumber, displayValueFuncName) {
+function Control(name, section, layoutRow, color, type, midiCC, byteNumber, displayValueFuncName) {
     var self = this;
     this.name = name;
     this.section = section;
-    this.channel = channel;
+    this.layoutRow = layoutRow;
     this.color = color;
     this.type = type;
     this.valueMin = 0;
@@ -46,6 +51,11 @@ function Control(name, section, channel, color, type, midiCC, byteNumber, displa
     this.draw = function() {
         var controlDiv = document.createElement("div");
         controlDiv.className = 'control';
+        controlDiv.style['width'] = `${Math.round(CONTROL_WIDTH * SYNTH_UI_SCALE_FACTOR)}px`;
+        controlDiv.style['height'] = `${Math.round(CONTROL_HEIGHT * SYNTH_UI_SCALE_FACTOR)}px`;
+        controlDiv.style['margin'] = `${Math.round(CONTROL_WIDTH * 0.06  * SYNTH_UI_SCALE_FACTOR)}px`;
+        controlDiv.style['margin-bottom'] = `${Math.round(2 * CONTROL_WIDTH * 0.06 * SYNTH_UI_SCALE_FACTOR)}px`;
+
         if (self.color !== ''){
             controlDiv.className += ` ${self.color}Color`;
         }
@@ -69,6 +79,7 @@ function Control(name, section, channel, color, type, midiCC, byteNumber, displa
         } else if (self.type === CONTROL_TYPE_SWITCH_OFF_ON){
             var switchOffOn = document.createElement("select");
             switchOffOn.id = self.inputElementID;
+            switchOffOn.style['margin-top'] = `${Math.round(((CONTROL_HEIGHT - CONTROL_LABEL_HEIGHT) / 2)  * SYNTH_UI_SCALE_FACTOR)}px`;
             var optionOn = document.createElement("option");
             optionOn.text = 'On';
             optionOn.value = 0;
@@ -88,6 +99,7 @@ function Control(name, section, channel, color, type, midiCC, byteNumber, displa
         } else if (self.type === CONTROL_TYPE_GLIDE_MODE){
             var switchGlideMode = document.createElement("select");
             switchGlideMode.id = self.inputElementID;
+            switchGlideMode.style['margin-top'] = `${Math.round(((CONTROL_HEIGHT - CONTROL_LABEL_HEIGHT) / 2)  * SYNTH_UI_SCALE_FACTOR)}px`;
             var optionPortamento = document.createElement("option");
             optionPortamento.text = 'P';
             optionPortamento.value = 0;
@@ -120,6 +132,9 @@ function Control(name, section, channel, color, type, midiCC, byteNumber, displa
         var label = document.createElement("label");
         label.innerHTML = self.name + '<br>' + self.section;
         label.htmlFor = self.inputElementID;
+        label.style['width'] = `${Math.round(CONTROL_WIDTH * SYNTH_UI_SCALE_FACTOR)}px`;
+        label.style['height'] = `${Math.round(CONTROL_LABEL_HEIGHT * SYNTH_UI_SCALE_FACTOR)}px`;
+        label.style['font-size'] = `${Math.round(CONTROL_LABEL_FONT_SIZE * SYNTH_UI_SCALE_FACTOR)}px`;
         labelDiv.append(label);
         controlDiv.append(labelDiv)
 
@@ -134,6 +149,9 @@ function Control(name, section, channel, color, type, midiCC, byteNumber, displa
                 }
             });
             self.sliderUI.setValue(self.getValue());
+            console.log(self.sliderUI)
+            self.sliderUI.sliderElem.style['height'] = `${Math.round(SLIDER_HEIGHT * SYNTH_UI_SCALE_FACTOR)}px`;
+            //self.sliderUI.sliderElem.style['margin-top'] = `${Math.round(SLIDER_HEIGHT * 0.1 * SYNTH_UI_SCALE_FACTOR)}px`;
         }
     }
     this.updateUI = function() {
@@ -248,7 +266,7 @@ function Preset(name, author, categories, timestamp, id) {
             var control = new Control(
                 controlDef.name, 
                 controlDef.section, 
-                controlDef.channel,
+                controlDef.layoutRow,
                 controlDef.color,
                 controlDef.type, 
                 controlDef.midi, 

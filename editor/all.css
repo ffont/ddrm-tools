@@ -51,22 +51,19 @@ body {
 
 #mainControlsWrapper .controlsRow {
 	white-space: nowrap;
+	margin-top:20px;
 }
 
 #mainControlsWrapper .controlsRow .control {
 	display: inline-block;
 	position: relative;
-	width: 60px;
-	height: 155px;
-	margin: 4px;
-	margin-bottom: 8px;
 	vertical-align: top;
 	text-align: center;
+	/* size attributes are set on JS */
 }
 
 #mainControlsWrapper .controlsRow .control .slider.slider-vertical {
-	height: 100px;
-	margin-top: 10px;
+	/* size attributes are set on JS */
 }
 
 #mainControlsWrapper .controlsRow .control .slider.slider-vertical .slider-selection {
@@ -102,14 +99,12 @@ body {
 }
 
 #mainControlsWrapper .controlsRow .control select {
-	margin-top: 60px;
+	/* size attributes are set on JS */
 }
 
 #mainControlsWrapper .controlsRow .control .labelDiv {
-	font-size: 9px;
 	position: absolute;
 	bottom: 0px;
-	width: 60px;
-	height: 30px;
 	overflow: hidden;
+	/* size attributes are set on JS */
 }
