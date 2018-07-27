@@ -128,6 +128,10 @@ body {
 	left: 6px; /* (20px-8px)/2 */ 
 }
 
+#mainControlsWrapper .controlsRow .control .slider.slider-vertical .tooltip {
+	pointer-events: none;
+}
+
 #mainControlsWrapper .controlsRow .control select {
 	/* size attributes are set on JS */
 }

@@ -142,8 +142,11 @@ function sendMIDIProgramChange(pcNumber, channel){
 function sendMIDIControlChange(ccNumber, ccValue, channel){
     if (channel === undefined) { channel = midiChannel };
     if (midiOutputDevice !== undefined){
+        
         midiOutputDevice.sendControlChange(ccNumber, ccValue, channel);
-        console.log(`Sent MIDI CC message to ch${channel} ${ccNumber} ${ccValue}`);
+        console.log(`Sent MIDI CC message to ch${channel} ${ccNumber} ${ccValue}`);    
+        // NOTE: DDRM uses CC 120 for glide mode. CC 120 is reserved for NRPs
+        // webmidi.js forbids its use in sendControlChange so we had to hack it to allow 120 in ccNumber (replace 119 by 220 in range checks)
     }
 }
 
