@@ -17,14 +17,13 @@ const CONTROL_SLIDER_MARGIN_TOP = 15;
 const SWITCH2_MARGIN_TOP = 55;
 const SWITCH3_MARGIN_TOP = 57;
 
-function Control(name, section, layoutRow, color, type, inverted, nTicks, midiCC, byteNumber, displayValueFuncName) {
+function Control(name, section, layoutRow, color, type, nTicks, midiCC, byteNumber, displayValueFuncName) {
     var self = this;
     this.name = name;
     this.section = section;
     this.layoutRow = layoutRow;
     this.color = color;
     this.type = type;
-    this.inverted = inverted;
     this.nTicks = nTicks;
     this.valueMin = 0;
     this.valueMax = 255;
@@ -80,7 +79,7 @@ function Control(name, section, layoutRow, color, type, inverted, nTicks, midiCC
             slider.setAttribute('data-slider-max', self.valueMax);
             slider.setAttribute('data-slider-step', 1);
             slider.setAttribute('data-slider-value', self.getValue());
-            slider.setAttribute('data-slider-reversed', !self.inverted);
+            slider.setAttribute('data-slider-reversed', true);
             slider.setAttribute('data-slider-orientation', 'vertical');
             if (self.nTicks === 6){
                 slider.setAttribute('data-slider-ticks', '[0, 51, 102, 153, 205, 254]');
@@ -105,7 +104,7 @@ function Control(name, section, layoutRow, color, type, inverted, nTicks, midiCC
             sliderOffOn.setAttribute('data-slider-step', 255);
             sliderOffOn.setAttribute('data-slider-handle', 'square');
             sliderOffOn.setAttribute('data-slider-value', self.getValue());
-            sliderOffOn.setAttribute('data-slider-reversed', !self.inverted);
+            sliderOffOn.setAttribute('data-slider-reversed', true);
             sliderOffOn.setAttribute('data-slider-orientation', 'vertical');
             sliderOffOn.onchange = self.oninput;
             controlDiv.append(sliderOffOn);
@@ -122,7 +121,7 @@ function Control(name, section, layoutRow, color, type, inverted, nTicks, midiCC
             switchGlideMode.setAttribute('data-slider-step', 127);
             switchGlideMode.setAttribute('data-slider-handle', 'square');
             switchGlideMode.setAttribute('data-slider-value', self.getValue());
-            switchGlideMode.setAttribute('data-slider-reversed', !self.inverted);
+            switchGlideMode.setAttribute('data-slider-reversed', false);
             switchGlideMode.setAttribute('data-slider-orientation', 'horizontal');
             switchGlideMode.onchange = self.oninput;
             controlDiv.append(switchGlideMode);
@@ -303,8 +302,7 @@ function Preset(name, author, categories, timestamp, id) {
                 controlDef.section, 
                 controlDef.layoutRow,
                 controlDef.color,
-                controlDef.type, 
-                controlDef.inverted,
+                controlDef.type,
                 controlDef.nTicks,
                 controlDef.midi, 
                 controlDef.byte,
@@ -344,9 +342,12 @@ function Preset(name, author, categories, timestamp, id) {
         } 
     }
     this.receiveControlChange = function(ccNumber, ccValue) {
-        var control = self.midiCCLookup[ccNumber];
-        control.setValue(ccValue * 2, false);  // Scale value to  0-255 range
-        control.updateUI();
+        if (ccNumber !== 100){
+            // DDRM sends midi ccNumber 100 for feet 1, feet 2 and glide mode controls, this is bug as it should send 102 and 103 according to spec
+            var control = self.midiCCLookup[ccNumber];
+            control.setValue(ccValue * 2, false);  // Scale value to  0-255 range
+            control.updateUI();    
+        }
     }
     this.save = function(remove, store, callback) {
         var data = {};
@@ -420,7 +421,7 @@ function FileBank(name) {
         }
         for (var i in bankBytes){
             var presetBytes = bankBytes[i];
-            self.addPreset('Preset #' + (i + 1).toString(), presetBytes, i);
+            self.addPreset('Preset #' + (parseInt(i, 10) + 1).toString(), presetBytes, i);
         }
         console.log(self.presets.length + ' presets loaded from bank ' + self.name);
     }

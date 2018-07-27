@@ -56,6 +56,7 @@ function rangeDetune(value, midiValue, normValue){
 }
 
 function rangeFeet(value, midiValue, normValue){
+	midiValue = 127 - midiValue;
 	if (midiValue >= 0 && midiValue < 22){
 		return `16'`;
 	} else if (midiValue >= 22 && midiValue < 43){
@@ -72,6 +73,7 @@ function rangeFeet(value, midiValue, normValue){
 }
 
 function rangeFunction(value, midiValue, normValue){
+	midiValue = 127 - midiValue;
 	if (midiValue >= 0 && midiValue < 22){
 		return `Sin`;
 	} else if (midiValue >= 22 && midiValue < 43){
