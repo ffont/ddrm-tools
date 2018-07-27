@@ -56,11 +56,10 @@ body {
 	background-color: #f3f3f3;
 	border: 1px solid #eee;
 	border-radius: 10px;
-	padding-top: 15px;
 	margin-bottom: 8px;
 	display: inline-block;
-	padding-right: 5px;
-	padding-left: 5px;
+	padding-right: 0px;
+	padding-left: 0px;
 }
 
 #mainControlsWrapper .controlsRow .control {
@@ -79,28 +78,52 @@ body {
 	background: #ccc;
 }
 
-#mainControlsWrapper .controlsRow .control.redColor .slider-handle {
+#mainControlsWrapper .controlsRow .control.redColor .slider .slider-handle {
 	background: rgb(190, 60, 55);
 }
 
-#mainControlsWrapper .controlsRow .control.greenColor .slider-handle {
+#mainControlsWrapper .controlsRow .control.greenColor .slider .slider-handle {
 	background: rgb(47, 110, 90);
 }
 
-#mainControlsWrapper .controlsRow .control.yellowColor .slider-handle {
+#mainControlsWrapper .controlsRow .control.yellowColor .slider .slider-handle {
 	background: rgb(255, 246, 116);
 }
 
-#mainControlsWrapper .controlsRow .control.grayColor .slider-handle {
+#mainControlsWrapper .controlsRow .control.grayColor .slider .slider-handle {
 	background: rgb(230, 230, 230);
 }
 
-#mainControlsWrapper .controlsRow .control.blackColor .slider-handle {
+#mainControlsWrapper .controlsRow .control.blackColor .slider .slider-handle {
 	background: rgb(0, 0, 0);
 }
 
-#mainControlsWrapper .controlsRow .control.whiteColor .slider-handle {
+#mainControlsWrapper .controlsRow .control.whiteColor .slider .slider-handle {
 	background: rgb(250, 250, 250);
+}
+
+#mainControlsWrapper .controlsRow .control .slider .slider-tick.round {
+	/* Customize slider ticks */
+	border-radius: 0px;
+	height: 1px;
+	margin-top: 0px;
+	background: #eee;
+	z-index: 0;
+}
+
+#mainControlsWrapper .controlsRow .control .slider .slider-tick.round.in-selection {
+	/* Customize slider ticks */
+	background: #eee;
+}
+
+#mainControlsWrapper .controlsRow .control .slider .slider-track {
+	border-radius: 2px;
+}
+
+#mainControlsWrapper .controlsRow .control .slider.slider-vertical .slider-track {
+	border-radius: 0px;
+	width: 8px;
+	left: 6px; /* (20px-8px)/2 */ 
 }
 
 #mainControlsWrapper .controlsRow .control select {

@@ -10,8 +10,8 @@ function autoAdjustUIScaleFactor(){
         }
     }
     var maxWidth = document.getElementById('synthControls').offsetWidth;
-    var controlWidth = maxWidth/(maxControlsInRow + 3.2);
-    var newScaleFactor = controlWidth/CONTROL_WIDTH;
+    var newMaxControlWidth = maxWidth/maxControlsInRow;  // Max control width (includes margin)
+    var newScaleFactor = newMaxControlWidth/(CONTROL_WIDTH + 2 * CONTROL_MARGIN);
     if (newScaleFactor < MIN_SCALE_FACTOR){
         SYNTH_UI_SCALE_FACTOR = MIN_SCALE_FACTOR;
     } else if (newScaleFactor > MAX_SCALE_FACTOR){

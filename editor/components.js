@@ -3,21 +3,29 @@ const CONTROL_TYPE_SLIDER = 'slider';
 const CONTROL_TYPE_SWITCH_OFF_ON = 'switchOffOn';
 const CONTROL_TYPE_GLIDE_MODE = 'glideMode';
 const N_BYTES_PER_BANK = 98;
+
+// UI base sizes
 const CONTROL_WIDTH = 60;
-const CONTROL_HEIGHT = 155;
+const CONTROL_HEIGHT = 180;
 const SLIDER_HEIGHT = 100;
 const CONTROL_LABEL_HEIGHT = 25;
 const CONTROL_LABEL_FONT_SIZE = 9;
 const SWITCH2_HEIGHT = 25;
 const SWITCH3_HEIGHT = 40;
+const CONTROL_MARGIN = CONTROL_WIDTH * 0.06;
+const CONTROL_SLIDER_MARGIN_TOP = 15;
+const SWITCH2_MARGIN_TOP = 55;
+const SWITCH3_MARGIN_TOP = 57;
 
-function Control(name, section, layoutRow, color, type, midiCC, byteNumber, displayValueFuncName) {
+function Control(name, section, layoutRow, color, type, inverted, nTicks, midiCC, byteNumber, displayValueFuncName) {
     var self = this;
     this.name = name;
     this.section = section;
     this.layoutRow = layoutRow;
     this.color = color;
     this.type = type;
+    this.inverted = inverted;
+    this.nTicks = nTicks;
     this.valueMin = 0;
     this.valueMax = 255;
     this.value = 0;
@@ -53,10 +61,9 @@ function Control(name, section, layoutRow, color, type, midiCC, byteNumber, disp
     this.draw = function() {
         var controlDiv = document.createElement("div");
         controlDiv.className = 'control';
-        controlDiv.style['width'] = `${Math.round(CONTROL_WIDTH * SYNTH_UI_SCALE_FACTOR)}px`;
-        controlDiv.style['height'] = `${Math.round(CONTROL_HEIGHT * SYNTH_UI_SCALE_FACTOR)}px`;
-        controlDiv.style['margin'] = `${Math.round(CONTROL_WIDTH * 0.06  * SYNTH_UI_SCALE_FACTOR)}px`;
-        controlDiv.style['margin-bottom'] = `${Math.round(2 * CONTROL_WIDTH * 0.06 * SYNTH_UI_SCALE_FACTOR)}px`;
+        controlDiv.style['width'] = `${Math.floor(CONTROL_WIDTH * SYNTH_UI_SCALE_FACTOR)}px`;
+        controlDiv.style['height'] = `${Math.floor(CONTROL_HEIGHT * SYNTH_UI_SCALE_FACTOR)}px`;
+        controlDiv.style['margin'] = `${Math.floor(CONTROL_MARGIN  * SYNTH_UI_SCALE_FACTOR)}px`;
 
         if (self.color !== ''){
             controlDiv.className += ` ${self.color}Color`;
@@ -73,8 +80,16 @@ function Control(name, section, layoutRow, color, type, midiCC, byteNumber, disp
             slider.setAttribute('data-slider-max', self.valueMax);
             slider.setAttribute('data-slider-step', 1);
             slider.setAttribute('data-slider-value', self.getValue());
-            slider.setAttribute('data-slider-reversed', true);
+            slider.setAttribute('data-slider-reversed', !self.inverted);
             slider.setAttribute('data-slider-orientation', 'vertical');
+            if (self.nTicks === 6){
+                slider.setAttribute('data-slider-ticks', '[0, 51, 102, 153, 205, 254]');
+            } else if (self.nTicks === 5){
+                slider.setAttribute('data-slider-ticks', '[0, 64, 127, 191, 254]');
+            } else if (self.nTicks === 1){
+                slider.setAttribute('data-slider-ticks', '[0, 127, 255]');
+                slider.setAttribute('data-slider-ticks-snap-bounds', '3');
+            }
             slider.onchange = self.oninput;
             controlDiv.append(slider);
 
@@ -90,7 +105,7 @@ function Control(name, section, layoutRow, color, type, midiCC, byteNumber, disp
             sliderOffOn.setAttribute('data-slider-step', 255);
             sliderOffOn.setAttribute('data-slider-handle', 'square');
             sliderOffOn.setAttribute('data-slider-value', self.getValue());
-            sliderOffOn.setAttribute('data-slider-reversed', true);
+            sliderOffOn.setAttribute('data-slider-reversed', !self.inverted);
             sliderOffOn.setAttribute('data-slider-orientation', 'vertical');
             sliderOffOn.onchange = self.oninput;
             controlDiv.append(sliderOffOn);
@@ -107,7 +122,7 @@ function Control(name, section, layoutRow, color, type, midiCC, byteNumber, disp
             switchGlideMode.setAttribute('data-slider-step', 127);
             switchGlideMode.setAttribute('data-slider-handle', 'square');
             switchGlideMode.setAttribute('data-slider-value', self.getValue());
-            switchGlideMode.setAttribute('data-slider-reversed', true);
+            switchGlideMode.setAttribute('data-slider-reversed', !self.inverted);
             switchGlideMode.setAttribute('data-slider-orientation', 'horizontal');
             switchGlideMode.onchange = self.oninput;
             controlDiv.append(switchGlideMode);
@@ -122,9 +137,9 @@ function Control(name, section, layoutRow, color, type, midiCC, byteNumber, disp
         var label = document.createElement("label");
         label.innerHTML = self.name + '<br>' + self.section;
         label.htmlFor = self.inputElementID;
-        label.style['width'] = `${Math.round(CONTROL_WIDTH * SYNTH_UI_SCALE_FACTOR)}px`;
-        label.style['height'] = `${Math.round(CONTROL_LABEL_HEIGHT * SYNTH_UI_SCALE_FACTOR)}px`;
-        label.style['font-size'] = `${Math.round(CONTROL_LABEL_FONT_SIZE * SYNTH_UI_SCALE_FACTOR)}px`;
+        label.style['width'] = `${Math.floor(CONTROL_WIDTH * SYNTH_UI_SCALE_FACTOR)}px`;
+        label.style['height'] = `${Math.floor(CONTROL_LABEL_HEIGHT * SYNTH_UI_SCALE_FACTOR)}px`;
+        label.style['font-size'] = `${Math.floor(CONTROL_LABEL_FONT_SIZE * SYNTH_UI_SCALE_FACTOR)}px`;
         labelDiv.append(label);
         controlDiv.append(labelDiv)
 
@@ -139,7 +154,8 @@ function Control(name, section, layoutRow, color, type, midiCC, byteNumber, disp
                 }
             });
             self.sliderUI.setValue(self.getValue());
-            self.sliderUI.sliderElem.style['height'] = `${Math.round(SLIDER_HEIGHT * SYNTH_UI_SCALE_FACTOR)}px`;
+            self.sliderUI.sliderElem.style['height'] = `${Math.floor(SLIDER_HEIGHT * SYNTH_UI_SCALE_FACTOR)}px`;
+            self.sliderUI.sliderElem.style['margin-top'] = `${CONTROL_SLIDER_MARGIN_TOP}px`;
         } else if (self.type === CONTROL_TYPE_SWITCH_OFF_ON){
 
             self.sliderUI = new Slider(`#${self.inputElementID}`, {
@@ -148,8 +164,8 @@ function Control(name, section, layoutRow, color, type, midiCC, byteNumber, disp
                 }
             });
             self.sliderUI.setValue(self.getValue());
-            self.sliderUI.sliderElem.style['height'] = `${SWITCH2_HEIGHT}px`; // NOTE: don't scale here //`${Math.round(SWITCH2_HEIGHT * SYNTH_UI_SCALE_FACTOR)}px`;
-            self.sliderUI.sliderElem.style['margin-top'] = '50%';
+            self.sliderUI.sliderElem.style['height'] = `${SWITCH2_HEIGHT}px`; // NOTE: don't scale here //`${Math.floor(SWITCH2_HEIGHT * SYNTH_UI_SCALE_FACTOR)}px`;
+            self.sliderUI.sliderElem.style['margin-top'] = `${Math.floor(SWITCH2_MARGIN_TOP * SYNTH_UI_SCALE_FACTOR)}px`;
 
         } else if (self.type === CONTROL_TYPE_GLIDE_MODE){
 
@@ -159,8 +175,8 @@ function Control(name, section, layoutRow, color, type, midiCC, byteNumber, disp
                 }
             });
             self.sliderUI.setValue(self.getValue());
-            self.sliderUI.sliderElem.style['width'] = `${SWITCH3_HEIGHT}px`; // NOTE: don't scale here //`${Math.round(SWITCH2_HEIGHT * SYNTH_UI_SCALE_FACTOR)}px`;
-            self.sliderUI.sliderElem.style['margin-top'] = '60%';
+            self.sliderUI.sliderElem.style['width'] = `${SWITCH3_HEIGHT}px`; // NOTE: don't scale here //`${Math.floor(SWITCH2_HEIGHT * SYNTH_UI_SCALE_FACTOR)}px`;
+            self.sliderUI.sliderElem.style['margin-top'] = `${Math.floor(SWITCH3_MARGIN_TOP * SYNTH_UI_SCALE_FACTOR)}px`;
         }
     }
     this.updateUI = function() {
@@ -278,6 +294,8 @@ function Preset(name, author, categories, timestamp, id) {
                 controlDef.layoutRow,
                 controlDef.color,
                 controlDef.type, 
+                controlDef.inverted,
+                controlDef.nTicks,
                 controlDef.midi, 
                 controlDef.byte,
                 controlDef.displayValueFuncName,

@@ -24,7 +24,7 @@ function rangeDefault(value, midiValue, normValue){
 }
 
 function range10(value, midiValue, normValue){
-	return `${roundToN(10 * normValue)}`;
+	return `${roundToN(10 * normValue, 1)}`;
 }
 
 function rangeSlowFast(value, midiValue, normValue){
@@ -52,7 +52,7 @@ function rangeShortLong(value, midiValue, normValue){
 }
 
 function rangeDetune(value, midiValue, normValue){
-	return `${roundToN((normValue - 0.5) * 2 * -100)}%`;
+	return `${roundToN((normValue - 0.5) * 2 * -100, 0)}%`;
 }
 
 function rangeFeet(value, midiValue, normValue){
@@ -88,7 +88,7 @@ function rangeFunction(value, midiValue, normValue){
 }
 
 function rangeNone(value, midiValue, normValue){
-	range10(value, midiValue, normValue);
+	return range10(value, midiValue, normValue);
 }
 
 function rangeMix(value, midiValue, normValue){
