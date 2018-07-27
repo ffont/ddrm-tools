@@ -109,6 +109,8 @@ body {
 	margin-top: 0px;
 	background: #eee;
 	z-index: 0;
+	width: 26px;
+	margin-left: -3px;
 }
 
 #mainControlsWrapper .controlsRow .control .slider .slider-tick.round.in-selection {

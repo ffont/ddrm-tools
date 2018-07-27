@@ -11,7 +11,7 @@ const SLIDER_HEIGHT = 100;
 const CONTROL_LABEL_HEIGHT = 25;
 const CONTROL_LABEL_FONT_SIZE = 9;
 const SWITCH2_HEIGHT = 25;
-const SWITCH3_HEIGHT = 40;
+const SWITCH3_WIDTH = 30;
 const CONTROL_MARGIN = CONTROL_WIDTH * 0.06;
 const CONTROL_SLIDER_MARGIN_TOP = 15;
 const SWITCH2_MARGIN_TOP = 55;
@@ -156,6 +156,15 @@ function Control(name, section, layoutRow, color, type, inverted, nTicks, midiCC
             self.sliderUI.setValue(self.getValue());
             self.sliderUI.sliderElem.style['height'] = `${Math.floor(SLIDER_HEIGHT * SYNTH_UI_SCALE_FACTOR)}px`;
             self.sliderUI.sliderElem.style['margin-top'] = `${CONTROL_SLIDER_MARGIN_TOP}px`;
+
+            if (self.nTicks === 1) {
+                // Remove first and last tick
+                // Bootstrap slider does now allow to define one tick only in the middle because ticks define the range as well.
+                // To show only the one in the middle we have to remove them afterwards.
+                var ticksContainer = self.sliderUI.sliderElem.getElementsByClassName('slider-tick-container')[0];
+                ticksContainer.removeChild(ticksContainer.childNodes[0]);
+                ticksContainer.removeChild(ticksContainer.childNodes[1]);
+            }
         } else if (self.type === CONTROL_TYPE_SWITCH_OFF_ON){
 
             self.sliderUI = new Slider(`#${self.inputElementID}`, {
@@ -175,8 +184,9 @@ function Control(name, section, layoutRow, color, type, inverted, nTicks, midiCC
                 }
             });
             self.sliderUI.setValue(self.getValue());
-            self.sliderUI.sliderElem.style['width'] = `${SWITCH3_HEIGHT}px`; // NOTE: don't scale here //`${Math.floor(SWITCH2_HEIGHT * SYNTH_UI_SCALE_FACTOR)}px`;
+            self.sliderUI.sliderElem.style['width'] = `${SWITCH3_WIDTH}px`; // NOTE: don't scale here //`${Math.floor(SWITCH2_HEIGHT * SYNTH_UI_SCALE_FACTOR)}px`;
             self.sliderUI.sliderElem.style['margin-top'] = `${Math.floor(SWITCH3_MARGIN_TOP * SYNTH_UI_SCALE_FACTOR)}px`;
+            self.sliderUI.sliderElem.style['margin-right'] = `10px`;
         }
     }
     this.updateUI = function() {
