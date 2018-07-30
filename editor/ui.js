@@ -104,27 +104,34 @@ function drawPresetManagerControls() {
 
 
 function drawPresetControls(){
-    controlsElement = document.getElementById("synthControls");
-    controlsElement.innerHTML = "";
-    
+
     var preset = PRESET_MANAGER.currentPreset;
+
+    var controlsElement = document.getElementById("synthControls");
+    var presetTitleDiv = document.getElementById("presetTitle");
+    var presetMetadataDiv = document.getElementById("presetMetadata");
+    var controlsPanelActions = document.getElementById("controlsPanelActions");
+    controlsElement.innerHTML = "";
+    presetTitleDiv.innerHTML = "";
+    presetMetadataDiv.innerHTML = "";
+    controlsPanelActions.innerHTML = "";
+
+    // Set preset name and metadata
     if (preset === undefined){
-        var message = document.createElement("p");
-        message.innerHTML = 'No preset selected';
-        controlsElement.appendChild(message);
+        presetTitleDiv.innerHTML = '<h2>No preset selected</h2>';
         return;
     }
-
-    // Add preset name and main action buttons
-    var presetNameDiv = document.createElement("div");
-    presetNameDiv.innerHTML = `<h2>${preset.name}</h2>`;
+    presetTitleDiv.innerHTML = `<h2>${preset.name}</h2>`;
     if (preset.author){
-        presetNameDiv.innerHTML += `by ${preset.author}, `;
+        presetMetadataDiv.innerHTML += `by ${preset.author}, `;
     }
     if (preset.timestamp){
-        presetNameDiv.innerHTML += `${preset.timestamp.toString().split(' GMT')[0]} `;
+        presetMetadataDiv.innerHTML += `${preset.timestamp.toString().split(' GMT')[0]} `;
     }
-    presetNameDiv.innerHTML += `(${preset.id})`;
+    presetMetadataDiv.innerHTML += `(${preset.id})`;
+
+
+    // Add action buttons to actions section
     var sendMIDIButton = document.createElement("button");
     sendMIDIButton.innerHTML = 'Send to Synth';
     sendMIDIButton.onclick = function(){
@@ -159,14 +166,12 @@ function drawPresetControls(){
     if (preset.storeName !== LOCAL_STORE.name){
         deleteLocalButton.disabled = true;
     }
-    presetNameDiv.appendChild(document.createElement("br"));
-    presetNameDiv.appendChild(sendMIDIButton);
-    presetNameDiv.appendChild(saveOnlineButton);
-    presetNameDiv.appendChild(deleteOnlineButton);
-    presetNameDiv.appendChild(saveLocalButton);
-    presetNameDiv.appendChild(deleteLocalButton);
-    controlsElement.appendChild(presetNameDiv);
-    controlsElement.appendChild(document.createElement("br"));
+    controlsPanelActions.appendChild(sendMIDIButton);
+    controlsPanelActions.appendChild(saveOnlineButton);
+    controlsPanelActions.appendChild(deleteOnlineButton);
+    controlsPanelActions.appendChild(saveLocalButton);
+    controlsPanelActions.appendChild(deleteLocalButton);
+    
 
     // Add main synth controls
     mainControlsWrapper = document.createElement("div");

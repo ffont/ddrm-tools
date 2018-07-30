@@ -1,21 +1,34 @@
 body { 
 	font-family: sans-serif; 
 }
-	
-#sideBar {
-	float: right;
-	padding:20px;
-	height: 100%;
-	width: 280px;
-}
 
-#controlsPanel {
-	padding:20px;
-	width: calc(100% - 280px);
-}
-
-#sideBar select { 
+#topBar {
 	width: 100%;
+	padding-left: 20px;
+	padding-right: 20px;
+	padding-top: 20px;
+	overflow: hidden;
+}
+
+#topBar #presetMetadata {
+	float:right;
+	margin-top: 10px;
+}
+
+#topBar #presetTitle {
+	white-space: nowrap;
+}
+
+#topBar #presetTitle h2 {
+	margin: 0px;
+}
+	
+#bottomBar {
+	float: bottom;
+	width: 100%;
+	padding:20px;
+	overflow: scroll;
+	background-color: #fefefe;
 }
 
 #uiBlocker {
@@ -45,6 +58,17 @@ body {
     position: relative;
     top: -55px;
     left: 15%;
+}
+
+#controlsPanel {
+	padding:20px;
+	padding-top: :10px;
+	width: 100%;
+}
+
+#controlsPanel #controlsPanelActions {
+	text-align: center;
+	margin-top: 10px;
 }
 
 #mainControlsWrapper {

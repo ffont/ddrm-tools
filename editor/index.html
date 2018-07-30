@@ -47,31 +47,30 @@
 </head>
 <body onload="init();">
 
-	<div id="sideBar">
+	<div id="topBar">
+		<div id="presetMetadata"></div>
+		<div id="presetTitle"></div>
+	</div>
+	
+	<div id="controlsPanel">
+		<div id="synthControls"></div>
+		<div id="controlsPanelActions"></div>
+	</div>
 
-		<!-- MIDI -->
-		<div id="midiSettings"></div>
+	<div id="bottomBar">
+		<!-- Bank -->
+		<div id="presetManagerControls"></div>
 
-		<br>
 		<!-- bank file selector -->
 		Load presets from bank file:
 		<form action='#' onsubmit="return false;">
 		<input type='file' id='fileinput'>
-		<br><input type='button' id='btnLoad' value='Load' onclick='loadBankFile();'>
+		<input type='button' id='btnLoad' value='Load' onclick='loadBankFile();'>
 		</form>
-
 		<br>
-		<!-- Bank -->
-		<div id="presetManagerControls"></div>
 
+		<!-- MIDI -->
+		<div id="midiSettings"></div>
 	</div>
-
-	<div id="controlsPanel">
-
-		<!-- Synth -->
-		<div id="synthControls"></div>
-
-	</div>
-
 </body>
 </html>
