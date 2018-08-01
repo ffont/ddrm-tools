@@ -118,10 +118,10 @@ function drawPresetControls(){
 
     // Set preset name and metadata
     if (preset === undefined){
-        presetTitleDiv.innerHTML = '<h2>No preset selected</h2>';
+        presetTitleDiv.innerHTML = 'No preset selected';
         return;
     }
-    presetTitleDiv.innerHTML = `<h2>${preset.name}</h2>`;
+    presetTitleDiv.innerHTML = `${preset.name}`;
     if (preset.author){
         presetMetadataDiv.innerHTML += `by ${preset.author}, `;
     }

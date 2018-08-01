@@ -2,33 +2,29 @@ body {
 	font-family: sans-serif; 
 }
 
-#topBar {
-	width: 100%;
-	padding-left: 20px;
-	padding-right: 20px;
-	padding-top: 20px;
-	overflow: hidden;
+nav {
+	color: white;
 }
 
-#topBar #presetMetadata {
-	float:right;
+.navbar {
+	border-radius: 0px;
+	min-height: 0px;
+	margin-bottom: 15px;
+}
+
+#presetMetadata {
 	margin-top: 10px;
+	margin-right: 10px;
 }
 
-#topBar #presetTitle {
+#presetTitle {
 	white-space: nowrap;
 }
 
-#topBar #presetTitle h2 {
-	margin: 0px;
-}
-	
 #bottomBar {
-	float: bottom;
-	width: 100%;
-	padding:20px;
-	overflow: scroll;
-	background-color: #fefefe;
+	background-color: #eee;
+	margin-top: 20px;
+	padding-top: 10px;
 }
 
 #uiBlocker {
@@ -60,13 +56,7 @@ body {
     left: 15%;
 }
 
-#controlsPanel {
-	padding:20px;
-	padding-top: :10px;
-	width: 100%;
-}
-
-#controlsPanel #controlsPanelActions {
+#controlsPanelActions {
 	text-align: center;
 	margin-top: 10px;
 }
