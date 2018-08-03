@@ -149,7 +149,7 @@ function Control(name, section, layoutRow, color, type, nTicks, midiCC, byteNumb
         if (self.type === CONTROL_TYPE_SLIDER){
             self.sliderUI = new Slider(`#${self.inputElementID}`, {
                 formatter: function(value) {
-                    return `${self.displayValueFunc(self.getValue(), self.getMIDIValue(), self.getNormValue())}`;
+                    return `${self.name}: ${self.displayValueFunc(self.getValue(), self.getMIDIValue(), self.getNormValue())}`;
                 }
             });
             self.sliderUI.setValue(self.getValue());
@@ -168,7 +168,7 @@ function Control(name, section, layoutRow, color, type, nTicks, midiCC, byteNumb
 
             self.sliderUI = new Slider(`#${self.inputElementID}`, {
                 formatter: function(value) {
-                    return `${self.displayValueFunc(self.getValue(), self.getMIDIValue(), self.getNormValue())}`;
+                    return `${self.name}: ${self.displayValueFunc(self.getValue(), self.getMIDIValue(), self.getNormValue())}`;
                 }
             });
             self.sliderUI.setValue(self.getValue());
@@ -179,7 +179,7 @@ function Control(name, section, layoutRow, color, type, nTicks, midiCC, byteNumb
 
             self.sliderUI = new Slider(`#${self.inputElementID}`, {
                 formatter: function(value) {
-                    return `${self.displayValueFunc(self.getValue(), self.getMIDIValue(), self.getNormValue())}`;
+                    return `${self.name}: ${self.displayValueFunc(self.getValue(), self.getMIDIValue(), self.getNormValue())}`;
                 }
             });
             self.sliderUI.setValue(self.getValue());

@@ -1,5 +1,8 @@
 body { 
-	font-family: sans-serif; 
+	background-color: #2d2d2d;
+	font-family: 'Helvetica', sans-serif;
+	font-weight: 100;
+	font-style: normal;
 }
 
 nav {
@@ -9,7 +12,16 @@ nav {
 .navbar {
 	border-radius: 0px;
 	min-height: 0px;
-	margin-bottom: 15px;
+	margin-bottom: 5px;
+	color: white;
+}
+
+.navbar.navbar-inverse {
+    background-color: #222;
+    border-bottom: 1px solid #ddd;
+    border-top: 0px;
+    border-left: 0px;
+    border-right: 0px;
 }
 
 #presetMetadata {
@@ -22,9 +34,38 @@ nav {
 }
 
 #bottomBar {
-	background-color: #eee;
-	margin-top: 20px;
-	padding-top: 10px;
+	position: fixed;
+	bottom: 0px;
+	width: 100%;
+}
+
+#bottomBar ul li a {
+	color: white;
+}
+
+#bottomBar ul li.active a {
+	background-color: #222;
+}
+
+#bottomBarContent {
+	padding: 10px;
+	background-color: #222;
+	color: white;
+	height: 275px;
+	overflow: scroll;
+}
+
+#bottomBarContent select {
+	max-height: 160px;
+	color: black;
+}
+
+#bottomBarContent button {
+	color: black;
+}
+
+#midiSettings label {
+	margin-right: 5px;
 }
 
 #uiBlocker {
@@ -58,19 +99,24 @@ nav {
 
 #controlsPanelActions {
 	text-align: center;
-	margin-top: 10px;
+	margin-top: 5px;
+}
+
+#controlsPanelActions button {
+	margin: 2px;
 }
 
 #mainControlsWrapper {
 	overflow: scroll;
+	color: white;
 }
 
 #mainControlsWrapper .controlsRow {
 	white-space: nowrap;
-	background-color: #f3f3f3;
-	border: 1px solid #eee;
+	/*background-color: #222;
+	border: 1px solid #222;*/
 	border-radius: 10px;
-	margin-bottom: 8px;
+	margin-bottom: 4px;
 	display: inline-block;
 	padding-right: 0px;
 	padding-left: 0px;

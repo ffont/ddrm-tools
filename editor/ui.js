@@ -19,6 +19,7 @@ function autoAdjustUIScaleFactor(){
     } else {
         SYNTH_UI_SCALE_FACTOR = newScaleFactor;
     }
+    SYNTH_UI_SCALE_FACTOR = SYNTH_UI_SCALE_FACTOR * 0.85;
 }
 
 /* UI drawing */
@@ -133,11 +134,13 @@ function drawPresetControls(){
 
     // Add action buttons to actions section
     var sendMIDIButton = document.createElement("button");
+    sendMIDIButton.className = 'btn btn-xs btn-warning';
     sendMIDIButton.innerHTML = 'Send to Synth';
     sendMIDIButton.onclick = function(){
         PRESET_MANAGER.currentPreset.sendMIDI();
     };
     var saveOnlineButton = document.createElement("button");
+    saveOnlineButton.className = 'btn btn-xs btn-success';
     saveOnlineButton.innerHTML = 'Save online';
     saveOnlineButton.onclick = function(){
         blockUI();
@@ -146,6 +149,7 @@ function drawPresetControls(){
         });
     };
     var deleteOnlineButton = document.createElement("button");
+    deleteOnlineButton.className = 'btn btn-xs btn-danger';
     deleteOnlineButton.innerHTML = 'Delete online';
     deleteOnlineButton.onclick = function(){
         PRESET_MANAGER.currentPreset.save(true, ONLINE_STORE);
@@ -154,11 +158,13 @@ function drawPresetControls(){
         deleteOnlineButton.disabled = true;
     }
     var saveLocalButton = document.createElement("button");
+    saveLocalButton.className = 'btn btn-xs btn-success';
     saveLocalButton.innerHTML = 'Save local';
     saveLocalButton.onclick = function(){
         PRESET_MANAGER.currentPreset.save(false, LOCAL_STORE);
     };
     var deleteLocalButton = document.createElement("button");
+    deleteLocalButton.className = 'btn btn-xs btn-danger';
     deleteLocalButton.innerHTML = 'Delete local';
     deleteLocalButton.onclick = function(){
         PRESET_MANAGER.currentPreset.save(true, LOCAL_STORE);
