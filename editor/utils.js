@@ -9,11 +9,24 @@ function guid() {
   return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4() + '-' + s4() + s4() + s4();
 }
 
+/* Math utils */
+
 function roundToN(value, N){
 	if (N === undefined){
 		N = 2;
 	}
 	return Math.round(Math.pow(10, N) * value) / Math.pow(10, N);
+}
+
+function normalize(min, max) {
+	var delta = max - min;
+	return function (val) {
+		return (val - min) / delta;
+	};
+}
+
+function computeEuclideanDistance(p1x, p1y, p2x, p2y) {
+	return Math.sqrt(Math.pow(p2x - p1x, 2) + Math.pow(p2y - p1y, 2));
 }
 
 /* util functions to display control values */

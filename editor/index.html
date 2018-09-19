@@ -66,12 +66,14 @@
 	<script type='text/javascript' src='3rdparty/bootstrap-slider.min.js'></script>
 	<script type='text/javascript' src='3rdparty/tabletop.min.js'></script>
 	<script type='text/javascript' src='3rdparty/webmidi.min.js'></script>
+	<script type='text/javascript' src='3rdparty/tsne.js'></script>
 	<script type='text/javascript' src='globals.js'></script>
 	<script type='text/javascript' src='utils.js'></script>
 	<script type='text/javascript' src='midi.js'></script>
 	<script type='text/javascript' src='store.js'></script>
 	<script type='text/javascript' src='components.js'></script>
 	<script type='text/javascript' src='ui.js'></script>
+	<script type='text/javascript' src='space.js'></script>
 	<script type='text/javascript'>
 		function init(){
 			initMIDI(document.getElementById("midiSettings"));
@@ -91,9 +93,15 @@
 				if (PRESET_MANAGER.currentPreset === undefined) {
 					PRESET_MANAGER.setCurrentPresetToFirstPreset();
 					drawPresetControls();
-	                drawPresetManagerControls();
+					drawPresetManagerControls();
 	            }            
 			});
+
+			// Wait 4 seconds until some presets are loaded and create the preset space
+			PRESET_SPACE = new PresetSpace();
+			setTimeout(() => {
+				PRESET_SPACE.createSpace(PRESET_MANAGER.getFlatListOfPresets());
+			}, 4000);
 		}
 	</script>
 </body>

@@ -315,19 +315,23 @@ function Preset(name, author, categories, timestamp, id) {
             self.midiCCLookup[controlDef.midi] = control;
         }
     }
-    this.getControlValuesAsBytes = function(){
-        
+    this.getControlValuesAsArray = function () {
+
         // Create template with empty byte values
         var bytes = [];
-        for (var i=0; i<N_BYTES_PER_BANK; i++){
+        for (var i = 0; i < N_BYTES_PER_BANK; i++) {
             bytes.push(0);
         }
 
         // Fill in bytes per controls
-        for (var control of self.controls){
+        for (var control of self.controls) {
             bytes = control.writeToPresetBytesArray(bytes);
         }
-
+        return bytes;
+    }
+    this.getControlValuesAsBytes = function(){
+        var bytes = self.getControlValuesAsArray();
+        
         // Render array as HEX byte string
         var hexStringBytes = '';
         for (var value of bytes){
