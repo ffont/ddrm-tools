@@ -226,3 +226,16 @@ function unblockUI(){
         document.body.removeChild(blockUI);    
     }
 }
+
+function drawPresetSpaceControls(){
+    var buttonsElement = document.getElementById("timbreSpaceButtons");
+    buttonsElement.innerHTML = "";
+    buttonsElement.appendChild(PRESET_SPACE.drawButtons());
+    drawPresetSpacePad();
+}
+
+function drawPresetSpacePad(){
+    var padElement = document.getElementById("timbreSpacePad");
+    padElement.innerHTML = "";
+    padElement.appendChild(PRESET_SPACE.drawPad());
+}

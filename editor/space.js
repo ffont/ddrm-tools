@@ -4,8 +4,10 @@ const N_INTERPOLATED_PRESETS = 3;
 function PresetSpace() {
     var self = this;
     this.spaceSolution = undefined;
+    this.currentPoint = undefined;
+    this.interpolatedPresetsIDs = [];
     
-    this.createSpace = function(presetList) {
+    this.createSpace = function(presetList, callback) {
 
         var opt = {}
         opt.epsilon = 10; // epsilon is learning rate (10 = default)
@@ -26,9 +28,10 @@ function PresetSpace() {
             tsne.step(); // every time you call this, solution gets better
         }
         var solution = tsne.getSolution(); // Y is an array of 2-D points that you can plot
-
+        
         // post-process result (normalize)
-        xx = yy = [];
+        xx = [];
+        yy = [];
         for (var i = 0; i < solution.length; i++) {
             xx.push(solution[i][0]);
             yy.push(solution[i][1]);
@@ -41,6 +44,10 @@ function PresetSpace() {
             self.spaceSolution.push([xx_norm[i], yy_norm[i], presetList[i]]);
         }
         console.log(`Finished creating preset space with ${presetList.length} presets`);
+
+        if (callback !== undefined) {
+            callback(); // Call callback if provided
+        }
     }
 
     this.getInterpolatedPresetAtPoint = function(x, y) {
@@ -49,16 +56,18 @@ function PresetSpace() {
             return;
         }
 
-        distances = [];
+        var distances = [];
         for (var point of self.spaceSolution){
-            distances.push([computeEuclideanDistance(x, y, point[0], point[1]), point[2]]);
+            distances.push([computeEuclideanDistance(x, y, point[0], point[1]), point[2], point[0], point[1]]);
         }
-        distances.sort(function (a, b) { return a[0] > b[0] })
+        distances.sort();
         distances = distances.slice(0, N_INTERPOLATED_PRESETS);
 
         var distanceValueSum = 0.0;
+        self.interpolatedPresetsIDs = [];
         for (var i = 0; i < distances.length; i++){
             distanceValueSum += distances[i][0];
+            self.interpolatedPresetsIDs.push(distances[i][1].id);
         }
         
         var interpolatedBytes = [];
@@ -79,5 +88,81 @@ function PresetSpace() {
         PRESET_MANAGER.currentPreset.sendMIDI();
         drawPresetControls();
         drawPresetManagerControls();
+    }
+
+    this.drawPad = function(){
+        
+        // Add text label
+        var labelSpan = document.createElement("div");
+        if (self.spaceSolution ===  undefined){
+            labelSpan.innerHTML = 'No space has been built';
+        } else {
+            labelSpan.innerHTML = `Space built with ${this.spaceSolution.length} presets`;
+        }
+
+        // Add pad canvas
+        const PAD_WIDTH = 300;
+        const PAD_HEIGHT = 200;
+        var canvas = document.createElement("canvas");
+        canvas.id = 'presetSpaceCanvas';
+        canvas.width = PAD_WIDTH;
+        canvas.height = PAD_HEIGHT;
+        canvas.style.border = "1px white solid";
+        canvas.onclick = function(event){
+            if (self.spaceSolution !== undefined){
+                var x = event.offsetX / PAD_WIDTH;
+                var y = event.offsetY / PAD_HEIGHT;
+                self.currentPoint = [x, y];
+                self.setCurrentPresetAtPoint(x, y);
+                drawPresetSpacePad();
+            }
+        };
+
+        // Fill canvas with points
+        if (self.spaceSolution !== undefined){
+            var ctx = canvas.getContext("2d");
+            for (i in self.spaceSolution) {
+                var solution = self.spaceSolution[i];
+                if (self.interpolatedPresetsIDs.indexOf(solution[2].id) > -1){
+                    // Point is one of the interpolated presets
+                    ctx.fillStyle = "rgba(255, 0, 0, 0.2)";
+                } else {
+                    ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
+                }
+                ctx.beginPath();
+                ctx.arc(solution[0] * PAD_WIDTH, solution[1] * PAD_HEIGHT, 5, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+            if (self.currentPoint !== undefined) {
+                ctx.fillStyle = "rgba(0, 255, 0, 0.5)";
+                ctx.beginPath();
+                ctx.arc(self.currentPoint[0] * PAD_WIDTH, self.currentPoint[1] * PAD_HEIGHT, 5, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+        }
+        
+        // Create main object and add children
+        var controlDiv = document.createElement("div");
+        controlDiv.appendChild(labelSpan);
+        controlDiv.appendChild(canvas);
+        return controlDiv;
+    }
+
+    this.drawButtons = function(){
+
+        // Add button to trigger space build
+        var buildSpaceBtn = document.createElement("button");
+        buildSpaceBtn.className = 'btn';
+        buildSpaceBtn.innerHTML = 'Build space';
+        buildSpaceBtn.onclick = function () {
+            self.createSpace(PRESET_MANAGER.getFlatListOfPresets(), function(){
+                drawPresetSpacePad();
+            });
+        };
+
+        // Create main object and add children
+        var controlDiv = document.createElement("div");
+        controlDiv.appendChild(buildSpaceBtn);
+        return controlDiv;
     }
 }

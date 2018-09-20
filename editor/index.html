@@ -125,11 +125,8 @@
 	            }            
 			});
 
-			// Wait 4 seconds until some presets are loaded and create the preset space
 			PRESET_SPACE = new PresetSpace();
-			setTimeout(() => {
-				PRESET_SPACE.createSpace(PRESET_MANAGER.getFlatListOfPresets());
-			}, 4000);
+			drawPresetSpaceControls();
 		}
 	</script>
 </body>
