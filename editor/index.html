@@ -35,26 +35,54 @@
 		<div id="bottomBar" class="row">
 
 			<ul class="nav nav-tabs">
-				<li class="active"><a href="#">Preset selctor</a></li>
-				<li><a href="#">Morpher</a></li>
-				<li><a href="#">Timbre space</a></li>
-				<li><a href="#">CS80 tools</a></li>
-				<li><a href="#">Similar presets</a></li>
+				<li class="active"><a data-toggle="tab" href="#selectorTab">Preset selector</a></li>
+				<li><a data-toggle="tab" href="#morpherTab">Morpher</a></li>
+				<li><a data-toggle="tab" href="#spaceTab">Timbre space</a></li>
+				<li><a data-toggle="tab" href="#cs80Tab">CS80 tools</a></li>
+				<li><a data-toggle="tab" href="#similarTab">Similar presets</a></li>
 			</ul>
 
-			<div id="bottomBarContent" class="row">
-				<div class="col-md-4">
-					<div id="presetManagerControls"></div>
+			<div id="bottomBarContent" class="row tab-content">
+				<div id="selectorTab" class="tab-pane active">
+					<div class="col-md-4">
+						<div id="presetManagerControls"></div>
+					</div>
+					<div class="col-md-4">
+						Load presets from bank file:
+						<form action='#' onsubmit="return false;">
+						<input type='file' id='fileinput'>
+						<button id='btnLoad' onclick='loadBankFile();'>Load</button>
+						</form>
+					</div>
+					<div class="col-md-4">
+						<div id="midiSettings"></div>
+					</div>
 				</div>
-				<div class="col-md-4">
-					Load presets from bank file:
-					<form action='#' onsubmit="return false;">
-					<input type='file' id='fileinput'>
-					<button id='btnLoad' onclick='loadBankFile();'>Load</button>
-					</form>
+				<div id="morpherTab" class="tab-pane">
+					<div class="col-md-12">
+						Morpher
+					</div>
 				</div>
-				<div class="col-md-4">
-					<div id="midiSettings"></div>
+				<div id="spaceTab" class="tab-pane">
+					<div class="col-md-4">
+						Timbre Space
+					</div>
+					<div class="col-md-4">
+						<div id="timbreSpacePad"></div>
+					</div>
+					<div class="col-md-4">
+						<div id="timbreSpaceButtons"></div>
+					</div>
+				</div>
+				<div id="cs80Tab" class="tab-pane">
+					<div class="col-md-12">
+						CS80 tools
+					</div>
+				</div>
+				<div id="similarTab" class="tab-pane">
+					<div class="col-md-12">
+						Similar presets
+					</div>
 				</div>
 			</div>
 		</div>
