@@ -1,5 +1,7 @@
 const TSNE_ITERATIONS = 500;
 const N_INTERPOLATED_PRESETS = 3;
+var PAD_WIDTH = 200;
+var PAD_HEIGHT = 200;
 
 function PresetSpace() {
     var self = this;
@@ -85,6 +87,7 @@ function PresetSpace() {
     this.setCurrentPresetAtPoint = function(x, y){
         var values = self.getInterpolatedPresetAtPoint(x, y);
         PRESET_MANAGER.currentPreset.init(values);
+        
         PRESET_MANAGER.currentPreset.sendMIDI();
         drawPresetControls();
         drawPresetManagerControls();
@@ -93,7 +96,7 @@ function PresetSpace() {
     this.drawPad = function(){
         
         // Add text label
-        var labelSpan = document.createElement("div");
+        var labelSpan = document.createElement("label");
         if (self.spaceSolution ===  undefined){
             labelSpan.innerHTML = 'No space has been built';
         } else {
@@ -101,8 +104,6 @@ function PresetSpace() {
         }
 
         // Add pad canvas
-        const PAD_WIDTH = 300;
-        const PAD_HEIGHT = 200;
         var canvas = document.createElement("canvas");
         canvas.id = 'presetSpaceCanvas';
         canvas.width = PAD_WIDTH;

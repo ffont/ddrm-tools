@@ -1,6 +1,8 @@
 var SYNTH_UI_SCALE_FACTOR = 1.00;
 var MIN_SCALE_FACTOR = 0.62;
 var MAX_SCALE_FACTOR = 1.0;
+var SYNTH_UI_GLOBAL_SACLE_FACTOR = 0.85;
+var MAX_PRESET_SELECT_SIZE = 20;
 
 function autoAdjustUIScaleFactor(){
     var maxControlsInRow = 0;
@@ -19,7 +21,7 @@ function autoAdjustUIScaleFactor(){
     } else {
         SYNTH_UI_SCALE_FACTOR = newScaleFactor;
     }
-    SYNTH_UI_SCALE_FACTOR = SYNTH_UI_SCALE_FACTOR * 0.85;
+    SYNTH_UI_SCALE_FACTOR = SYNTH_UI_SCALE_FACTOR * SYNTH_UI_GLOBAL_SACLE_FACTOR;
 }
 
 /* UI drawing */
@@ -33,7 +35,7 @@ function drawPresetManagerControls() {
 
     var presetListSelect = document.createElement("select");
     presetListSelect.id = 'presetListSelect';
-    presetListSelect.size = Math.max(Math.min(numberOfPresets, 20), 10);
+    presetListSelect.size = Math.max(Math.min(numberOfPresets, MAX_PRESET_SELECT_SIZE), 10);
     for (var bankName of Object.keys(presetsDictionary)){
         var optgroup = document.createElement("optgroup");
         optgroup.label = bankName;

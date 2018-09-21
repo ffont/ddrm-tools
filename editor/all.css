@@ -9,6 +9,10 @@ nav {
 	color: white;
 }
 
+label {
+	color: white;
+}
+
 .navbar {
 	border-radius: 0px;
 	min-height: 0px;
@@ -66,6 +70,10 @@ nav {
 
 #midiSettings label {
 	margin-right: 5px;
+}
+
+#fileinput {
+	color: white;
 }
 
 #uiBlocker {
