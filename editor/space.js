@@ -108,7 +108,6 @@ function PresetSpace() {
         canvas.id = 'presetSpaceCanvas';
         canvas.width = PAD_WIDTH;
         canvas.height = PAD_HEIGHT;
-        canvas.style.border = "1px white solid";
         canvas.onclick = function(event){
             if (self.spaceSolution !== undefined){
                 var x = event.offsetX / PAD_WIDTH;
@@ -124,20 +123,23 @@ function PresetSpace() {
             var ctx = canvas.getContext("2d");
             for (i in self.spaceSolution) {
                 var solution = self.spaceSolution[i];
-                if (self.interpolatedPresetsIDs.indexOf(solution[2].id) > -1){
-                    // Point is one of the interpolated presets
-                    ctx.fillStyle = "rgba(255, 0, 0, 0.2)";
-                } else {
-                    ctx.fillStyle = "rgba(255, 255, 255, 0.2)";
-                }
+                ctx.fillStyle = `rgba(${255 * solution[0]}, ${255 * solution[1]}, ${255 * Math.sqrt(solution[0] * solution[1])}, 0.2)`;
                 ctx.beginPath();
-                ctx.arc(solution[0] * PAD_WIDTH, solution[1] * PAD_HEIGHT, 5, 0, 2 * Math.PI);
+                ctx.arc(solution[0] * PAD_WIDTH, solution[1] * PAD_HEIGHT, 30, 0, 2 * Math.PI);
                 ctx.fill();
+
+                if (self.interpolatedPresetsIDs.indexOf(solution[2].id) > -1) {
+                    // Point is one of the interpolated presets
+                    ctx.fillStyle = "rgba(255, 0, 0, 1.0)";
+                    ctx.beginPath();
+                    ctx.arc(solution[0] * PAD_WIDTH, solution[1] * PAD_HEIGHT, 1, 0, 2 * Math.PI);
+                    ctx.fill();
+                }
             }
             if (self.currentPoint !== undefined) {
-                ctx.fillStyle = "rgba(0, 255, 0, 0.5)";
+                ctx.fillStyle = "rgba(0, 255, 0, 1.0)";
                 ctx.beginPath();
-                ctx.arc(self.currentPoint[0] * PAD_WIDTH, self.currentPoint[1] * PAD_HEIGHT, 5, 0, 2 * Math.PI);
+                ctx.arc(self.currentPoint[0] * PAD_WIDTH, self.currentPoint[1] * PAD_HEIGHT, 2, 0, 2 * Math.PI);
                 ctx.fill();
             }
         }
