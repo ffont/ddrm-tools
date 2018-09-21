@@ -1,13 +1,18 @@
 const TSNE_ITERATIONS = 500;
-const N_INTERPOLATED_PRESETS = 3;
-var PAD_WIDTH = 200;
-var PAD_HEIGHT = 200;
+const USE_TRIANGULATION_FIRST = true;
+const DRAW_TRIANGLES = false;
+const N_INTERPOLATED_PRESETS = 3; 
+const SPACE_KEY_INCREMENT = 0.01;
+var PAD_WIDTH = 350;
+var PAD_HEIGHT = 350;
 
 function PresetSpace() {
     var self = this;
     this.spaceSolution = undefined;
     this.currentPoint = undefined;
     this.interpolatedPresetsIDs = [];
+    this.triangles = [];
+    this.trinaglesCoordinates = []
     
     this.createSpace = function(presetList, callback) {
 
@@ -42,11 +47,25 @@ function PresetSpace() {
         const yy_norm = yy.map(normalize(Math.min(...yy), Math.max(...yy)));
 
         self.spaceSolution = [];
+        var spaceSolutionPoints = [];
         for (var i = 0; i < solution.length; i++) {
             self.spaceSolution.push([xx_norm[i], yy_norm[i], presetList[i]]);
+            spaceSolutionPoints.push([xx_norm[i], yy_norm[i]]);
         }
-        console.log(`Finished creating preset space with ${presetList.length} presets`);
 
+        // Compute delaunay triangles https://github.com/mapbox/delaunator
+        const delaunay = Delaunator.from(spaceSolutionPoints);
+        self.triangles = delaunay.triangles;
+        self.trinaglesCoordinates = [];
+        for (let i = 0; i < self.triangles.length; i += 3) {
+            self.trinaglesCoordinates.push([
+                self.spaceSolution[self.triangles[i]].slice(0, 2),
+                self.spaceSolution[self.triangles[i + 1]].slice(0, 2),
+                self.spaceSolution[self.triangles[i + 2]].slice(0, 2),
+            ]);
+        }
+
+        console.log(`Finished creating preset space with ${presetList.length} presets`);
         if (callback !== undefined) {
             callback(); // Call callback if provided
         }
@@ -58,29 +77,55 @@ function PresetSpace() {
             return;
         }
 
-        var distances = [];
-        for (var point of self.spaceSolution){
-            distances.push([computeEuclideanDistance(x, y, point[0], point[1]), point[2], point[0], point[1]]);
+        var presetsToInterpolate = [];
+        if (USE_TRIANGULATION_FIRST){
+            // Find the corresponding triangle of the selected point in the map and chose vertices as presets to interpolate
+            var point_preset1 = undefined;
+            var point_preset2 = undefined;
+            var point_preset3 = undefined;
+            for (var i = 0; i < self.trinaglesCoordinates.length; i++) {
+                const triangle = self.trinaglesCoordinates[i];
+                if (isInTriangle(x, y, triangle[0][0], triangle[0][1], triangle[1][0], triangle[1][1], triangle[2][0], triangle[2][1])) {
+                    point_preset1 = self.spaceSolution[self.triangles[i * 3]];
+                    point_preset2 = self.spaceSolution[self.triangles[i * 3 + 1]];
+                    point_preset3 = self.spaceSolution[self.triangles[i * 3 + 2]];
+                }
+            }
+            if (point_preset1 !== undefined){
+                for (point_preset of [point_preset1, point_preset2, point_preset3]){
+                    presetsToInterpolate.push([computeEuclideanDistance(x, y, point_preset[0], point_preset[1]), point_preset[2]]);
+                }
+            } else {
+                console.log('No triangles found, using euclidean method...')
+            }
+        } 
+        
+        if (presetsToInterpolate.length === 0){
+            // Find 3 nearest neighours in the solution space and select them as presets to interpolate
+            for (var point of self.spaceSolution) {
+                presetsToInterpolate.push([computeEuclideanDistance(x, y, point[0], point[1]), point[2]]);
+            }
+            presetsToInterpolate.sort();
+            presetsToInterpolate = presetsToInterpolate.slice(0, N_INTERPOLATED_PRESETS);
         }
-        distances.sort();
-        distances = distances.slice(0, N_INTERPOLATED_PRESETS);
 
+        var interpolatedBytes = [];
         var distanceValueSum = 0.0;
         self.interpolatedPresetsIDs = [];
-        for (var i = 0; i < distances.length; i++){
-            distanceValueSum += distances[i][0];
-            self.interpolatedPresetsIDs.push(distances[i][1].id);
+        for (var i = 0; i < presetsToInterpolate.length; i++) {
+            distanceValueSum += presetsToInterpolate[i][0];
+            self.interpolatedPresetsIDs.push(presetsToInterpolate[i][1].id);
         }
-        
-        var interpolatedBytes = [];
-        for (var i = 0; i < distances[0][1].getControlValuesAsArray().length; i++){
+
+        for (var i = 0; i < presetsToInterpolate[0][1].getControlValuesAsArray().length; i++) {
             var interpolatedValue = 0;
-            for (var j = 0; j < distances.length; j++) {
-                const weight = (distances[j][0] / distanceValueSum);
-                interpolatedValue += weight * distances[j][1].getControlValuesAsArray()[i];
+            for (var j = 0; j < presetsToInterpolate.length; j++) {
+                const weight = (presetsToInterpolate[j][0] / distanceValueSum);
+                interpolatedValue += weight * presetsToInterpolate[j][1].getControlValuesAsArray()[i];
             }
             interpolatedBytes.push(Math.round(interpolatedValue));
         }
+
         return interpolatedBytes;
     }
 
@@ -108,15 +153,51 @@ function PresetSpace() {
         canvas.id = 'presetSpaceCanvas';
         canvas.width = PAD_WIDTH;
         canvas.height = PAD_HEIGHT;
+        canvas.tabIndex = "1";
         canvas.onclick = function(event){
             if (self.spaceSolution !== undefined){
                 var x = event.offsetX / PAD_WIDTH;
                 var y = event.offsetY / PAD_HEIGHT;
                 self.currentPoint = [x, y];
-                self.setCurrentPresetAtPoint(x, y);
+                self.setCurrentPresetAtPoint(self.currentPoint[0], self.currentPoint[1]);
                 drawPresetSpacePad();
             }
         };
+        canvas.onkeydown = function(event){
+            if (self.spaceSolution !== undefined) {
+                if (self.currentPoint === undefined){
+                    self.currentPoint = [0.5, 0.5];
+                }
+                var code = event.keyCode;
+                var x = self.currentPoint[0];
+                var y = self.currentPoint[1];
+                if (code === 37){
+                    self.currentPoint = [x - SPACE_KEY_INCREMENT, y]; //Left key
+                } else if (code === 39) {
+                    self.currentPoint = [x + SPACE_KEY_INCREMENT, y]; //Right key
+                } else if (code === 38) {
+                    self.currentPoint = [x, y - SPACE_KEY_INCREMENT]; //Up key
+                } else if (code === 40) {
+                    self.currentPoint = [x, y + SPACE_KEY_INCREMENT]; //Down key
+                }
+
+                self.setCurrentPresetAtPoint(self.currentPoint[0], self.currentPoint[1]);
+                drawPresetSpacePad();    
+                event.stopPropagation();
+            }
+        }
+
+        // Draw triangles
+        if ((DRAW_TRIANGLES) && (self.spaceSolution !== undefined)) {
+            var ctx = canvas.getContext("2d");
+            for (coords of self.trinaglesCoordinates) {
+                ctx.beginPath();
+                ctx.moveTo(coords[0][0] * PAD_WIDTH, coords[0][1] * PAD_HEIGHT);
+                ctx.lineTo(coords[1][0] * PAD_WIDTH, coords[1][1] * PAD_HEIGHT);
+                ctx.lineTo(coords[2][0] * PAD_WIDTH, coords[2][1] * PAD_HEIGHT);
+                ctx.stroke();
+            }
+        }
 
         // Fill canvas with points
         if (self.spaceSolution !== undefined){
@@ -125,7 +206,7 @@ function PresetSpace() {
                 var solution = self.spaceSolution[i];
                 ctx.fillStyle = `rgba(${255 * solution[0]}, ${255 * solution[1]}, ${255 * Math.sqrt(solution[0] * solution[1])}, 0.2)`;
                 ctx.beginPath();
-                ctx.arc(solution[0] * PAD_WIDTH, solution[1] * PAD_HEIGHT, 30, 0, 2 * Math.PI);
+                ctx.arc(solution[0] * PAD_WIDTH, solution[1] * PAD_HEIGHT, 10, 0, 2 * Math.PI);
                 ctx.fill();
 
                 if (self.interpolatedPresetsIDs.indexOf(solution[2].id) > -1) {

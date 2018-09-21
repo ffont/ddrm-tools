@@ -2,7 +2,7 @@ var SYNTH_UI_SCALE_FACTOR = 1.00;
 var MIN_SCALE_FACTOR = 0.62;
 var MAX_SCALE_FACTOR = 1.0;
 var SYNTH_UI_GLOBAL_SACLE_FACTOR = 0.85;
-var MAX_PRESET_SELECT_SIZE = 20;
+var MAX_PRESET_SELECT_SIZE = 14;
 
 function autoAdjustUIScaleFactor(){
     var maxControlsInRow = 0;
@@ -240,4 +240,5 @@ function drawPresetSpacePad(){
     var padElement = document.getElementById("timbreSpacePad");
     padElement.innerHTML = "";
     padElement.appendChild(PRESET_SPACE.drawPad());
+    document.getElementById("presetSpaceCanvas").focus();
 }

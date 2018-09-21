@@ -1,9 +1,10 @@
 <!doctype html>
 <html lang="en">
+
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<link rel="stylesheet" href="3rdparty/bootstrap.min.css">
 	<link rel="stylesheet" href="3rdparty/bootstrap-slider.min.css">
@@ -11,77 +12,50 @@
 
 	<title>DDRM Online Editor</title>
 </head>
+
 <body onload="init();">
 
 	<nav class="navbar navbar-inverse">
-      <div class="container-fluid">
-        <div class="navbar-header">
-          <h4 id="presetTitle"></h4>
-        </div>
-    	<div class="navbar-right">
-    		<div id="presetMetadata"></div>
-        </div>
-    </nav>
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<h4 id="presetTitle"></h4>
+			</div>
+			<div class="navbar-right">
+				<div id="presetMetadata"></div>
+			</div>
+	</nav>
 
 	<div class="container-fluid">
-	
+
 		<div class="row">
-			<div class="container-fluid">
-				<div id="synthControls"></div>
+			<div class="col-md-4">
+				<div id="presetManagerControls"></div>
+				<br>
 				<div id="controlsPanelActions"></div>
+			</div>
+			<div class="col-md-4">
+				<div id="timbreSpacePad"></div>
+			</div>
+			<div class="col-md-4">
+				<label>Load presets from bank file:</label>
+				<form action='#' onsubmit="return false;">
+					<input type='file' id='fileinput'>
+					<button id='btnLoad' onclick='loadBankFile();'>Load</button>
+				</form>
+				<br>
+				<div id="timbreSpaceButtons"></div>
+				<br>
+				<div id="midiSettings"></div>
 			</div>
 		</div>
 
 		<div id="bottomBar" class="row">
-
-			<ul class="nav nav-tabs">
-				<li class="active"><a data-toggle="tab" href="#selectorTab">Preset selector</a></li>
-				<li><a data-toggle="tab" href="#morpherTab">Morpher</a></li>
-				<li><a data-toggle="tab" href="#spaceTab">Timbre space</a></li>
-				<li><a data-toggle="tab" href="#cs80Tab">CS80 tools</a></li>
-				<li><a data-toggle="tab" href="#similarTab">Similar presets</a></li>
-			</ul>
-
-			<div id="bottomBarContent" class="row tab-content">
-				<div id="selectorTab" class="tab-pane active">
-					<div class="col-md-4">
-						<div id="presetManagerControls"></div>
-					</div>
-					<div class="col-md-4">
-						Load presets from bank file:
-						<form action='#' onsubmit="return false;">
-						<input type='file' id='fileinput'>
-						<button id='btnLoad' onclick='loadBankFile();'>Load</button>
-						</form>
-					</div>
-					<div class="col-md-4">
-						<div id="midiSettings"></div>
-					</div>
-				</div>
-				<div id="morpherTab" class="tab-pane">
-					<div class="col-md-12">
-						Morpher
-					</div>
-				</div>
-				<div id="spaceTab" class="tab-pane">
-					<div class="col-md-4">
-						Timbre Space
-					</div>
-					<div class="col-md-4">
-						<div id="timbreSpacePad"></div>
-					</div>
-					<div class="col-md-4">
-						<div id="timbreSpaceButtons"></div>
-					</div>
-				</div>
-				<div id="cs80Tab" class="tab-pane">
-					<div class="col-md-12">
-						CS80 tools
-					</div>
-				</div>
-				<div id="similarTab" class="tab-pane">
-					<div class="col-md-12">
-						Similar presets
+			<div id="bottomBarContent" class="row" style="height:320px;">
+				<div id="synthTab" class="tab-pane active">
+					<div class="col-md-12" style="text-align:center;">
+						<div class="container-fluid">
+							<div id="synthControls"></div>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -89,6 +63,7 @@
 	</div>
 
 	<!-- JS -->
+	<script type='text/javascript' src='3rdparty/delaunator.min.js'></script>  <!-- TODO: attribution https://github.com/mapbox/delaunator -->
 	<script type='text/javascript' src='3rdparty/jquery.min.js'></script>
 	<script type='text/javascript' src='3rdparty/bootstrap.min.js'></script>
 	<script type='text/javascript' src='3rdparty/bootstrap-slider.min.js'></script>
@@ -103,26 +78,26 @@
 	<script type='text/javascript' src='ui.js'></script>
 	<script type='text/javascript' src='space.js'></script>
 	<script type='text/javascript'>
-		function init(){
+		function init() {
 			initMIDI(document.getElementById("midiSettings"));
-			autoAdjustUIScaleFactor();
+			SYNTH_UI_SCALE_FACTOR = 0.52;  // Use a fixed scale. Can also be automatically adjusted using autoAdjustUIScaleFactor()
 
 			ONLINE_STORE = new GoogleSpreadsheetStore(
-			    scriptURL="https://script.google.com/macros/s/AKfycbxdlE7J-VHEfSAEtj-MtA_MptxmtiMUWTbRU9oaU3zaZ-cSptW-/exec", 
-			    spreadsheetURL="https://docs.google.com/spreadsheets/d/10FpFlL8FKWJzRu2La21AdD-nhivl-7agzHNiIhQ5Llg/edit?usp=sharing");
+				scriptURL = "https://script.google.com/macros/s/AKfycbxdlE7J-VHEfSAEtj-MtA_MptxmtiMUWTbRU9oaU3zaZ-cSptW-/exec",
+				spreadsheetURL = "https://docs.google.com/spreadsheets/d/10FpFlL8FKWJzRu2La21AdD-nhivl-7agzHNiIhQ5Llg/edit?usp=sharing");
 
 			LOCAL_STORE = new LocalStore();
 
 			PRESET_MANAGER = new PresetManager();
 			drawPresetControls();
 			drawPresetManagerControls();
-			
-			PRESET_MANAGER.loadLocalAndOnlinePresets(function(){
+
+			PRESET_MANAGER.loadLocalAndOnlinePresets(function () {
 				if (PRESET_MANAGER.currentPreset === undefined) {
 					PRESET_MANAGER.setCurrentPresetToFirstPreset();
 					drawPresetControls();
 					drawPresetManagerControls();
-	            }            
+				}
 			});
 
 			PRESET_SPACE = new PresetSpace();
@@ -130,4 +105,5 @@
 		}
 	</script>
 </body>
+
 </html>
