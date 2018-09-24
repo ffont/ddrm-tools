@@ -3,6 +3,7 @@ body {
 	font-family: 'Helvetica', sans-serif;
 	font-weight: 100;
 	font-style: normal;
+	overflow-x: hidden;
 }
 
 nav {
@@ -42,9 +43,10 @@ canvas {
 }
 
 #bottomBar {
-	/*position: fixed;*/
 	bottom: 0px;
-	width: 100%;
+	/*position: fixed;
+	opacity: 0.3;
+	height: 250px;*/
 }
 
 #bottomBar ul li a {
@@ -114,8 +116,6 @@ canvas {
 }
 
 #controlsPanelActions {
-	text-align: center;
-	margin-top: 5px;
 }
 
 #controlsPanelActions button {

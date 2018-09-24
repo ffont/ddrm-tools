@@ -1,10 +1,14 @@
 const TSNE_ITERATIONS = 500;
 const USE_TRIANGULATION_FIRST = true;
-const DRAW_TRIANGLES = false;
+var DRAW_TRIANGLES = false;
 const N_INTERPOLATED_PRESETS = 3; 
 const SPACE_KEY_INCREMENT = 0.01;
-var PAD_WIDTH = 350;
-var PAD_HEIGHT = 350;
+var PAD_WIDTH = 600;
+var PAD_HEIGHT = PAD_WIDTH * 1.0;
+var GAUSS_1_SIZE = PAD_WIDTH * 0.85;
+var GAUSS_2_SIZE = PAD_WIDTH * 1.4;
+var CIRCLE_SIZE = PAD_WIDTH * 0.02;
+var ctx = undefined;  // Needs to be global for graphics.js to work
 
 function PresetSpace() {
     var self = this;
@@ -139,15 +143,7 @@ function PresetSpace() {
     }
 
     this.drawPad = function(){
-        
-        // Add text label
-        var labelSpan = document.createElement("label");
-        if (self.spaceSolution ===  undefined){
-            labelSpan.innerHTML = 'No space has been built';
-        } else {
-            labelSpan.innerHTML = `Space built with ${this.spaceSolution.length} presets`;
-        }
-
+    
         // Add pad canvas
         var canvas = document.createElement("canvas");
         canvas.id = 'presetSpaceCanvas';
@@ -172,13 +168,15 @@ function PresetSpace() {
                 var x = self.currentPoint[0];
                 var y = self.currentPoint[1];
                 if (code === 37){
-                    self.currentPoint = [x - SPACE_KEY_INCREMENT, y]; //Left key
+                    self.currentPoint = [x - SPACE_KEY_INCREMENT, y]; // Left key
                 } else if (code === 39) {
-                    self.currentPoint = [x + SPACE_KEY_INCREMENT, y]; //Right key
+                    self.currentPoint = [x + SPACE_KEY_INCREMENT, y]; // Right key
                 } else if (code === 38) {
-                    self.currentPoint = [x, y - SPACE_KEY_INCREMENT]; //Up key
+                    self.currentPoint = [x, y - SPACE_KEY_INCREMENT]; // Up key
                 } else if (code === 40) {
-                    self.currentPoint = [x, y + SPACE_KEY_INCREMENT]; //Down key
+                    self.currentPoint = [x, y + SPACE_KEY_INCREMENT]; // Down key
+                } else if (code === 84) {
+                    DRAW_TRIANGLES = !DRAW_TRIANGLES;
                 }
 
                 self.setCurrentPresetAtPoint(self.currentPoint[0], self.currentPoint[1]);
@@ -186,11 +184,57 @@ function PresetSpace() {
                 event.stopPropagation();
             }
         }
+        ctx = canvas.getContext("2d");
+
+        // Fill canvas with points
+        if (self.spaceSolution !== undefined){
+            for (i in self.spaceSolution) {  // Plot background colors
+                var solution = self.spaceSolution[i];
+                push();
+                move(solution[0] * PAD_WIDTH, solution[1] * PAD_HEIGHT);
+                colorHSL(solution[0], 0.9, (1 - solution[1]) * 0.8 + 0.1);
+                alpha(0.5);
+                gauss(GAUSS_1_SIZE);
+                alpha(0.2);
+                gauss(GAUSS_2_SIZE);
+                pop();
+            }
+            for (i in self.spaceSolution) {  // Plot preset circles
+                var solution = self.spaceSolution[i];
+                push();
+                move(solution[0] * PAD_WIDTH, solution[1] * PAD_HEIGHT);
+                alpha(0.05);
+                color(255, 255, 255);
+                circle(CIRCLE_SIZE);
+                pop();
+            }
+            for (i in self.spaceSolution) {  // Plot interpolated presets circles
+                var solution = self.spaceSolution[i];
+                if (self.interpolatedPresetsIDs.indexOf(solution[2].id) > -1) {
+                    var solution = self.spaceSolution[i];
+                    push();
+                    move(solution[0] * PAD_WIDTH, solution[1] * PAD_HEIGHT);
+                    alpha(0.3);
+                    color(255, 255, 255);
+                    circle(CIRCLE_SIZE);
+                    pop();
+                }
+            }
+
+            if (self.currentPoint !== undefined) {
+                push();
+                move(self.currentPoint[0] * PAD_WIDTH, self.currentPoint[1] * PAD_HEIGHT);
+                alpha(0.7);
+                color(255, 255, 255);
+                ball(CIRCLE_SIZE);
+                pop();
+            }
+        }
 
         // Draw triangles
         if ((DRAW_TRIANGLES) && (self.spaceSolution !== undefined)) {
-            var ctx = canvas.getContext("2d");
             for (coords of self.trinaglesCoordinates) {
+                ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
                 ctx.beginPath();
                 ctx.moveTo(coords[0][0] * PAD_WIDTH, coords[0][1] * PAD_HEIGHT);
                 ctx.lineTo(coords[1][0] * PAD_WIDTH, coords[1][1] * PAD_HEIGHT);
@@ -198,41 +242,22 @@ function PresetSpace() {
                 ctx.stroke();
             }
         }
-
-        // Fill canvas with points
-        if (self.spaceSolution !== undefined){
-            var ctx = canvas.getContext("2d");
-            for (i in self.spaceSolution) {
-                var solution = self.spaceSolution[i];
-                ctx.fillStyle = `rgba(${255 * solution[0]}, ${255 * solution[1]}, ${255 * Math.sqrt(solution[0] * solution[1])}, 0.2)`;
-                ctx.beginPath();
-                ctx.arc(solution[0] * PAD_WIDTH, solution[1] * PAD_HEIGHT, 10, 0, 2 * Math.PI);
-                ctx.fill();
-
-                if (self.interpolatedPresetsIDs.indexOf(solution[2].id) > -1) {
-                    // Point is one of the interpolated presets
-                    ctx.fillStyle = "rgba(255, 0, 0, 1.0)";
-                    ctx.beginPath();
-                    ctx.arc(solution[0] * PAD_WIDTH, solution[1] * PAD_HEIGHT, 1, 0, 2 * Math.PI);
-                    ctx.fill();
-                }
-            }
-            if (self.currentPoint !== undefined) {
-                ctx.fillStyle = "rgba(0, 255, 0, 1.0)";
-                ctx.beginPath();
-                ctx.arc(self.currentPoint[0] * PAD_WIDTH, self.currentPoint[1] * PAD_HEIGHT, 2, 0, 2 * Math.PI);
-                ctx.fill();
-            }
-        }
         
         // Create main object and add children
         var controlDiv = document.createElement("div");
-        controlDiv.appendChild(labelSpan);
         controlDiv.appendChild(canvas);
         return controlDiv;
     }
 
     this.drawButtons = function(){
+
+        // Add text label
+        var label = document.createElement("label");
+        if (self.spaceSolution === undefined) {
+            label.innerHTML = '&nbsp;No space has been built';
+        } else {
+            label.innerHTML = `&nbsp;Space built with ${this.spaceSolution.length} presets`;
+        }
 
         // Add button to trigger space build
         var buildSpaceBtn = document.createElement("button");
@@ -241,12 +266,14 @@ function PresetSpace() {
         buildSpaceBtn.onclick = function () {
             self.createSpace(PRESET_MANAGER.getFlatListOfPresets(), function(){
                 drawPresetSpacePad();
+                drawPresetSpaceControls();
             });
         };
 
         // Create main object and add children
         var controlDiv = document.createElement("div");
         controlDiv.appendChild(buildSpaceBtn);
+        controlDiv.appendChild(label);
         return controlDiv;
     }
 }

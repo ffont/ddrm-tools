@@ -29,23 +29,22 @@
 
 		<div class="row">
 			<div class="col-md-4">
-				<div id="presetManagerControls"></div>
-				<br>
-				<div id="controlsPanelActions"></div>
-			</div>
-			<div class="col-md-4">
-				<div id="timbreSpacePad"></div>
-			</div>
-			<div class="col-md-4">
 				<label>Load presets from bank file:</label>
 				<form action='#' onsubmit="return false;">
 					<input type='file' id='fileinput'>
 					<button id='btnLoad' onclick='loadBankFile();'>Load</button>
 				</form>
 				<br>
+				<div id="presetManagerControls"></div>
+				<br>
+				<div id="controlsPanelActions"></div>
+				<br>
 				<div id="timbreSpaceButtons"></div>
 				<br>
 				<div id="midiSettings"></div>
+			</div>
+			<div class="col-md-8">
+				<div id="timbreSpacePad"></div>
 			</div>
 		</div>
 
@@ -63,6 +62,8 @@
 	</div>
 
 	<!-- JS -->
+	<script type="text/javascript" src="3rdparty/noise.js"></script> <!-- TODO: credit this in README -->
+	<script type="text/javascript" src="3rdparty/graphics.js"></script>  <!-- TODO: credit this in README -->
 	<script type='text/javascript' src='3rdparty/delaunator.min.js'></script>  <!-- TODO: attribution https://github.com/mapbox/delaunator -->
 	<script type='text/javascript' src='3rdparty/jquery.min.js'></script>
 	<script type='text/javascript' src='3rdparty/bootstrap.min.js'></script>
