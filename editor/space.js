@@ -42,7 +42,11 @@ function PresetSpace() {
         var X = [];
         for (preset of presetList){
             var values = preset.getControlValuesAsArray();
-            X.push(values);
+            if (sum(values) > 600){
+                // Don't use "empty" presets to build the map
+                // NOTE: we use 600 as trheshold to consider that a preset is meningful and not random noise
+                X.push(values);
+            }
         }
         tsne.initDataRaw(X);
         tsne3d.initDataRaw(X);
@@ -54,7 +58,6 @@ function PresetSpace() {
         }
         var solution = tsne.getSolution(); // Y is an array of 2-D points that you can plot
         var solution3d = tsne3d.getSolution(); // Y is an array of 3-D points that you can plot
-        console.log(solution.length, solution3d.length);
         
         // post-process result (normalize)
         var xx = [];

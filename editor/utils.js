@@ -18,6 +18,10 @@ function roundToN(value, N){
 	return Math.round(Math.pow(10, N) * value) / Math.pow(10, N);
 }
 
+function sum(array){
+	return array.reduce((a, b) => a + b, 0);
+}
+
 function normalize(min, max) {
 	var delta = max - min;
 	return function (val) {
