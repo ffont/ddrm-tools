@@ -5,7 +5,7 @@ const N_INTERPOLATED_PRESETS = 3;
 const SPACE_KEY_INCREMENT = 0.01;
 var PAD_WIDTH = 600;
 var PAD_HEIGHT = PAD_WIDTH * 1.0;
-var GAUSS_1_SIZE = PAD_WIDTH * 0.85;
+var GAUSS_1_SIZE = PAD_WIDTH * 0.5;
 var GAUSS_2_SIZE = PAD_WIDTH * 1.4;
 var CIRCLE_SIZE = PAD_WIDTH * 0.02;
 var ctx = undefined;  // Needs to be global for graphics.js to work
@@ -13,18 +13,30 @@ var ctx = undefined;  // Needs to be global for graphics.js to work
 function PresetSpace() {
     var self = this;
     this.spaceSolution = undefined;
+    this.spaceSolution3d = undefined;
     this.currentPoint = undefined;
     this.interpolatedPresetsIDs = [];
     this.triangles = [];
-    this.trinaglesCoordinates = []
+    this.trinaglesCoordinates = [];
     
     this.createSpace = function(presetList, callback) {
+
+        // Init variables
+        self.currentPoint = undefined;
+        self.interpolatedPresetsIDs = [];
+        self.triangles = [];
+        self.trinaglesCoordinates = [];
 
         var opt = {}
         opt.epsilon = 10; // epsilon is learning rate (10 = default)
         opt.perplexity = 30; // roughly how many neighbors each point influences (30 = default)
         opt.dim = 2; // dimensionality of the embedding (2 = default)
         var tsne = new tsnejs.tSNE(opt); // create a tSNE instance
+        var opt3d = {}
+        opt3d.epsilon = 10; // epsilon is learning rate (10 = default)
+        opt3d.perplexity = 30; // roughly how many neighbors each point influences (30 = default)
+        opt3d.dim = 3; // dimensionality of the embedding (2 = default)
+        var tsne3d = new tsnejs.tSNE(opt3d); // compute tsne in 3d also for mapping colour
 
         // initialize data. 
         var X = [];
@@ -33,16 +45,20 @@ function PresetSpace() {
             X.push(values);
         }
         tsne.initDataRaw(X);
+        tsne3d.initDataRaw(X);
 
         // compute space
         for (var k = 0; k < TSNE_ITERATIONS; k++) {
             tsne.step(); // every time you call this, solution gets better
+            tsne3d.step();
         }
         var solution = tsne.getSolution(); // Y is an array of 2-D points that you can plot
+        var solution3d = tsne3d.getSolution(); // Y is an array of 3-D points that you can plot
+        console.log(solution.length, solution3d.length);
         
         // post-process result (normalize)
-        xx = [];
-        yy = [];
+        var xx = [];
+        var yy = [];
         for (var i = 0; i < solution.length; i++) {
             xx.push(solution[i][0]);
             yy.push(solution[i][1]);
@@ -50,11 +66,25 @@ function PresetSpace() {
         const xx_norm = xx.map(normalize(Math.min(...xx), Math.max(...xx)));
         const yy_norm = yy.map(normalize(Math.min(...yy), Math.max(...yy)));
 
+        var xx3d = [];
+        var yy3d = [];
+        var zz3d = [];
+        for (var i = 0; i < solution3d.length; i++) {
+            xx3d.push(solution3d[i][0]);
+            yy3d.push(solution3d[i][1]);
+            zz3d.push(solution3d[i][2]);
+        }
+        const xx_norm3d = xx3d.map(normalize(Math.min(...xx3d), Math.max(...xx3d)));
+        const yy_norm3d = yy3d.map(normalize(Math.min(...yy3d), Math.max(...yy3d)));
+        const zz_norm3d = zz3d.map(normalize(Math.min(...zz3d), Math.max(...zz3d)));
+
         self.spaceSolution = [];
+        self.spaceSolution3d = [];
         var spaceSolutionPoints = [];
         for (var i = 0; i < solution.length; i++) {
             self.spaceSolution.push([xx_norm[i], yy_norm[i], presetList[i]]);
             spaceSolutionPoints.push([xx_norm[i], yy_norm[i]]);
+            self.spaceSolution3d.push([xx_norm3d[i], yy_norm3d[i], zz_norm3d[i], presetList[i]]);
         }
 
         // Compute delaunay triangles https://github.com/mapbox/delaunator
@@ -190,12 +220,13 @@ function PresetSpace() {
         if (self.spaceSolution !== undefined){
             for (i in self.spaceSolution) {  // Plot background colors
                 var solution = self.spaceSolution[i];
+                var solution3d = self.spaceSolution3d[i];
                 push();
                 move(solution[0] * PAD_WIDTH, solution[1] * PAD_HEIGHT);
-                colorHSL(solution[0], 0.9, (1 - solution[1]) * 0.8 + 0.1);
+                colorHSL(solution3d[0], solution3d[1], solution3d[2]);
                 alpha(0.5);
                 gauss(GAUSS_1_SIZE);
-                alpha(0.2);
+                alpha(0.1);
                 gauss(GAUSS_2_SIZE);
                 pop();
             }
