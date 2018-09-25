@@ -295,13 +295,18 @@ function PresetSpace() {
 
         // Add button to trigger space build
         var buildSpaceBtn = document.createElement("button");
+        buildSpaceBtn.id = 'buildSpaceBtnId';
         buildSpaceBtn.className = 'btn';
         buildSpaceBtn.innerHTML = 'Build space';
         buildSpaceBtn.onclick = function () {
-            self.createSpace(PRESET_MANAGER.getFlatListOfPresets(), function(){
-                drawPresetSpacePad();
-                drawPresetSpaceControls();
-            });
+            blockUI();
+            setTimeout(() => { // Using a timeout here so blockUI() is rendered before browser is busy computing maps
+                self.createSpace(PRESET_MANAGER.getFlatListOfPresets(), function () {
+                    unblockUI();
+                    drawPresetSpacePad();
+                    drawPresetSpaceControls();
+                });
+            }, 200);
         };
 
         // Create main object and add children

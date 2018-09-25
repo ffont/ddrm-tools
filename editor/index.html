@@ -88,8 +88,10 @@
 				spreadsheetURL = "https://docs.google.com/spreadsheets/d/10FpFlL8FKWJzRu2La21AdD-nhivl-7agzHNiIhQ5Llg/edit?usp=sharing");
 
 			LOCAL_STORE = new LocalStore();
-
 			PRESET_MANAGER = new PresetManager();
+
+			loadBankFromBytesArray("Factory Presets", FACTORY_BANK_BYTES);
+			loadBankFromBytesArray("Paul Shilling's CS80 presets", CS80_BANK_BYTES);
 			drawPresetControls();
 			drawPresetManagerControls();
 
@@ -103,6 +105,7 @@
 
 			PRESET_SPACE = new PresetSpace();
 			drawPresetSpaceControls();
+			document.getElementById("buildSpaceBtnId").click();
 		}
 	</script>
 </body>

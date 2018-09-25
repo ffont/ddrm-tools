@@ -218,7 +218,7 @@ function drawPresetControls(){
 function blockUI(){
     var blockUI = document.createElement("div");
     blockUI.id = "uiBlocker";
-    blockUI.innerHTML = '<div>Saving...<img src="http://www.socialups.com/static/images/fbinventory/ajax_loader.gif"></div>'
+    blockUI.innerHTML = '<div>Wait...<img src="http://www.socialups.com/static/images/fbinventory/ajax_loader.gif"></div>'
     document.body.appendChild(blockUI);
 }
 

@@ -2,7 +2,7 @@
 const CONTROL_TYPE_SLIDER = 'slider';
 const CONTROL_TYPE_SWITCH_OFF_ON = 'switchOffOn';
 const CONTROL_TYPE_GLIDE_MODE = 'glideMode';
-const N_BYTES_PER_BANK = 98;
+const N_BYTES_PER_PRESET = 98;
 
 // UI base sizes
 const CONTROL_WIDTH = 60;
@@ -319,7 +319,7 @@ function Preset(name, author, categories, timestamp, id) {
 
         // Create template with empty byte values
         var bytes = [];
-        for (var i = 0; i < N_BYTES_PER_BANK; i++) {
+        for (var i = 0; i < N_BYTES_PER_PRESET; i++) {
             bytes.push(0);
         }
 
@@ -495,12 +495,21 @@ function loadBankFile() {
             if (byteStr.length < 2) { byteStr = "0" + byteStr; }
             bytes.push(aByte);  // Loading number format
         }
+        console.log(bytes)
         var bankBytes = []
-        for (var i=0; i<bytes.length; i=i+N_BYTES_PER_BANK){
-            bankBytes.push(bytes.slice(i, i+N_BYTES_PER_BANK))
+        for (var i=0; i<bytes.length; i=i+N_BYTES_PER_PRESET){
+            bankBytes.push(bytes.slice(i, i + N_BYTES_PER_PRESET))
         }
         PRESET_MANAGER.loadBankFromFile(bankBytes, file.name);
     }
+}
+
+function loadBankFromBytesArray(bankName, bankBytesArray){
+    var bankBytes = []
+    for (var i = 0; i < bankBytesArray.length; i = i + N_BYTES_PER_PRESET) {
+        bankBytes.push(bankBytesArray.slice(i, i + N_BYTES_PER_PRESET))
+    }
+    PRESET_MANAGER.loadBankFromFile(bankBytes, bankName);
 }
 
 /* Preset Manager */
