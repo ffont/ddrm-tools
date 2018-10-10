@@ -239,6 +239,14 @@ function drawPresetSpaceControls(){
 function drawPresetSpacePad(){
     var padElement = document.getElementById("timbreSpacePad");
     padElement.innerHTML = "";
+    padElement.style.height = window.innerHeight + 'px';
     padElement.appendChild(PRESET_SPACE.drawPad());
+    
+    var bgPadElement = document.getElementById("timbreSpaceBgPad");
+    bgPadElement.innerHTML = "";
+    var w = bgPadElement.offsetWidth;
+    var h = bgPadElement.offsetHeight;
+    bgPadElement.appendChild(PRESET_SPACE.drawBgPad(w, h));
+
     document.getElementById("presetSpaceCanvas").focus();
 }

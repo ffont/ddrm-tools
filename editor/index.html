@@ -15,7 +15,12 @@
 
 <body onload="init();">
 
-	<nav class="navbar navbar-inverse">
+
+	<div id="header">
+		Deckard's Dream Timbre Space Demo
+	</div>
+
+	<nav class="navbar navbar-inverse" style="display: none;">
 		<div class="container-fluid">
 			<div class="navbar-header">
 				<h4 id="presetTitle"></h4>
@@ -25,10 +30,13 @@
 			</div>
 	</nav>
 
-	<div class="container-fluid">
+	<div id="timbreSpaceBgPad"></div>
 
+	<div id="timbreSpacePad"></div>
+
+	<div class="container-fluid">
 		<div class="row">
-			<div class="col-md-4">
+			<div class="col-md-4" style="display:none;">
 				<label>Load presets from bank file:</label>
 				<form action='#' onsubmit="return false;">
 					<input type='file' id='fileinput'>
@@ -43,7 +51,7 @@
 				<br>
 				<div id="midiSettings"></div>
 			</div>
-			<div class="col-md-8">
+			<div class="col-md" style="text-align: center;">
 				<div id="timbreSpacePad"></div>
 			</div>
 		</div>
@@ -90,7 +98,7 @@
 			LOCAL_STORE = new LocalStore();
 			PRESET_MANAGER = new PresetManager();
 
-			loadBankFromBytesArray("Factory Presets", FACTORY_BANK_BYTES);
+			//loadBankFromBytesArray("Factory Presets", FACTORY_BANK_BYTES);
 			loadBankFromBytesArray("Paul Shilling's CS80 presets", CS80_BANK_BYTES);
 			drawPresetControls();
 			drawPresetManagerControls();
@@ -99,7 +107,7 @@
 				if (PRESET_MANAGER.currentPreset === undefined) {
 					PRESET_MANAGER.setCurrentPresetToFirstPreset();
 					drawPresetControls();
-					drawPresetManagerControls();
+					//drawPresetManagerControls();
 				}
 			});
 

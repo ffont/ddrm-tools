@@ -279,8 +279,28 @@ function PresetSpace() {
         
         // Create main object and add children
         var controlDiv = document.createElement("div");
+        controlDiv.id = "timbreSpacePadWrapper";
+        controlDiv.style.height = PAD_HEIGHT + 'px';
+        controlDiv.style.width = PAD_WIDTH + 'px';
+        controlDiv.style.marginTop = -PAD_HEIGHT/2 + 'px';
+        controlDiv.style.marginLeft = -PAD_WIDTH / 2 + 'px';
+        controlDiv.style.position = 'absolute';
+        controlDiv.style.top = '50%';
+        controlDiv.style.left = '50%';
         controlDiv.appendChild(canvas);
         return controlDiv;
+    }
+
+    this.drawBgPad = function(w, h){
+        var canvas = document.createElement("canvas");
+        canvas.id = 'bgCanvas';
+        canvas.width = w;
+        canvas.height = h;
+        ctx = canvas.getContext("2d");
+        ctx.drawImage(document.getElementById('presetSpaceCanvas'), 0, 0, w, h);
+        var bgPad = document.createElement("div");
+        bgPad.appendChild(canvas);
+        return bgPad;
     }
 
     this.drawButtons = function(){
