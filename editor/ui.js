@@ -268,6 +268,7 @@ function toggleBottomPanel() {
     if (bottomPanel.offsetHeight <= CLOSED_BOTTOM_PANEL_HEIGHT){
         bottomPanelToggleControlsAnchor.innerHTML = '&darr;';
         bottomPanel.style.height = (document.getElementById('synthControls').offsetHeight + 20) + 'px';
+        bottomPanel.style.transition = 'height .25s';
     } else {
         bottomPanelToggleControlsAnchor.innerHTML = '&uarr;';
         bottomPanel.style.height = CLOSED_BOTTOM_PANEL_HEIGHT + 'px';
