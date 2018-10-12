@@ -175,18 +175,18 @@ function PresetSpace() {
         drawPresetManagerControls();
     }
 
-    this.drawPad = function(){
-    
+    this.drawPad = function(w, h){
+
         // Add pad canvas
         var canvas = document.createElement("canvas");
         canvas.id = 'presetSpaceCanvas';
-        canvas.width = PAD_WIDTH;
-        canvas.height = PAD_HEIGHT;
+        canvas.width = w;
+        canvas.height = w;
         canvas.tabIndex = "1";
         canvas.onclick = function(event){
             if (self.spaceSolution !== undefined){
-                var x = event.offsetX / PAD_WIDTH;
-                var y = event.offsetY / PAD_HEIGHT;
+                var x = event.offsetX / w;
+                var y = event.offsetY / w;
                 self.currentPoint = [x, y];
                 self.setCurrentPresetAtPoint(self.currentPoint[0], self.currentPoint[1]);
                 drawPresetSpacePad();
@@ -225,7 +225,7 @@ function PresetSpace() {
                 var solution = self.spaceSolution[i];
                 var solution3d = self.spaceSolution3d[i];
                 push();
-                move(solution[0] * PAD_WIDTH, solution[1] * PAD_HEIGHT);
+                move(solution[0] * w, solution[1] * w);
                 colorHSL(solution3d[0], solution3d[1], solution3d[2]);
                 alpha(0.5);
                 gauss(GAUSS_1_SIZE);
@@ -236,7 +236,7 @@ function PresetSpace() {
             for (i in self.spaceSolution) {  // Plot preset circles
                 var solution = self.spaceSolution[i];
                 push();
-                move(solution[0] * PAD_WIDTH, solution[1] * PAD_HEIGHT);
+                move(solution[0] * w, solution[1] * w);
                 alpha(0.05);
                 color(255, 255, 255);
                 circle(CIRCLE_SIZE);
@@ -247,7 +247,7 @@ function PresetSpace() {
                 if (self.interpolatedPresetsIDs.indexOf(solution[2].id) > -1) {
                     var solution = self.spaceSolution[i];
                     push();
-                    move(solution[0] * PAD_WIDTH, solution[1] * PAD_HEIGHT);
+                    move(solution[0] * w, solution[1] * w);
                     alpha(0.3);
                     color(255, 255, 255);
                     circle(CIRCLE_SIZE);
@@ -257,7 +257,7 @@ function PresetSpace() {
 
             if (self.currentPoint !== undefined) {
                 push();
-                move(self.currentPoint[0] * PAD_WIDTH, self.currentPoint[1] * PAD_HEIGHT);
+                move(self.currentPoint[0] * w, self.currentPoint[1] * w);
                 alpha(0.7);
                 color(255, 255, 255);
                 ball(CIRCLE_SIZE);
@@ -270,9 +270,9 @@ function PresetSpace() {
             for (coords of self.trinaglesCoordinates) {
                 ctx.strokeStyle = "rgba(255, 255, 255, 0.25)";
                 ctx.beginPath();
-                ctx.moveTo(coords[0][0] * PAD_WIDTH, coords[0][1] * PAD_HEIGHT);
-                ctx.lineTo(coords[1][0] * PAD_WIDTH, coords[1][1] * PAD_HEIGHT);
-                ctx.lineTo(coords[2][0] * PAD_WIDTH, coords[2][1] * PAD_HEIGHT);
+                ctx.moveTo(coords[0][0] * w, coords[0][1] * w);
+                ctx.lineTo(coords[1][0] * w, coords[1][1] * w);
+                ctx.lineTo(coords[2][0] * w, coords[2][1] * w);
                 ctx.stroke();
             }
         }
@@ -280,12 +280,12 @@ function PresetSpace() {
         // Create main object and add children
         var controlDiv = document.createElement("div");
         controlDiv.id = "timbreSpacePadWrapper";
-        controlDiv.style.height = PAD_HEIGHT + 'px';
-        controlDiv.style.width = PAD_WIDTH + 'px';
-        controlDiv.style.marginTop = -PAD_HEIGHT/2 + 'px';
-        controlDiv.style.marginLeft = -PAD_WIDTH / 2 + 'px';
+        controlDiv.style.height = w + 'px';
+        controlDiv.style.width = w + 'px';
+        //controlDiv.style.marginTop = -w/2 + 'px';
+        controlDiv.style.marginLeft = -w / 2 + 'px';
         controlDiv.style.position = 'absolute';
-        controlDiv.style.top = '50%';
+        //controlDiv.style.top = '50%';
         controlDiv.style.left = '50%';
         controlDiv.appendChild(canvas);
         return controlDiv;

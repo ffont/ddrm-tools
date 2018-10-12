@@ -10,63 +10,46 @@
 	<link rel="stylesheet" href="3rdparty/bootstrap-slider.min.css">
 	<link rel="stylesheet" href="all.css">
 
-	<title>DDRM Online Editor</title>
+	<title>DDRM Timbre Space Demo</title>
 </head>
 
 <body onload="init();">
 
+	<div id="timbreSpaceBgPad"></div>
 
 	<div id="header">
-		Deckard's Dream Timbre Space Demo
+		<img src="logo.svg" alt="Deckard's Dream Timbre Space Demo" title="Deckard's Dream Timbre Space Demo"/>
 	</div>
-
-	<nav class="navbar navbar-inverse" style="display: none;">
-		<div class="container-fluid">
-			<div class="navbar-header">
-				<h4 id="presetTitle"></h4>
-			</div>
-			<div class="navbar-right">
-				<div id="presetMetadata"></div>
-			</div>
-	</nav>
-
-	<div id="timbreSpaceBgPad"></div>
 
 	<div id="timbreSpacePad"></div>
 
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-md-4" style="display:none;">
-				<label>Load presets from bank file:</label>
-				<form action='#' onsubmit="return false;">
-					<input type='file' id='fileinput'>
-					<button id='btnLoad' onclick='loadBankFile();'>Load</button>
-				</form>
-				<br>
-				<div id="presetManagerControls"></div>
-				<br>
-				<div id="controlsPanelActions"></div>
-				<br>
-				<div id="timbreSpaceButtons"></div>
-				<br>
-				<div id="midiSettings"></div>
-			</div>
-			<div class="col-md" style="text-align: center;">
-				<div id="timbreSpacePad"></div>
-			</div>
-		</div>
+	<div id="midiSettingsModal" style="display:none;">
+		<div id="midiSettings"></div>
+	</div>
 
-		<div id="bottomBar" class="row">
-			<div id="bottomBarContent" class="row" style="height:320px;">
-				<div id="synthTab" class="tab-pane active">
-					<div class="col-md-12" style="text-align:center;">
-						<div class="container-fluid">
-							<div id="synthControls"></div>
-						</div>
-					</div>
-				</div>
-			</div>
+	<div id="bottomPanel">
+		<div id="bottomPanelToggleControls">
+			<a href="javascript:void(0);" id="bottomPanelToggleControlsAnchor" onclick="toggleBottomPanel()"></a>	
 		</div>
+		<div id="synthControls"></div>
+	</div>
+
+	<div class="hiddenStuff" style="display:none;">
+		<label>Load presets from bank file:</label>
+		<form action='#' onsubmit="return false;">
+			<input type='file' id='fileinput'>
+			<button id='btnLoad' onclick='loadBankFile();'>Load</button>
+		</form>
+		<br>
+		<div id="presetTitle"></div>
+		<br>
+		<div id="presetMetadata"></div>
+		<br>
+		<div id="presetManagerControls"></div>
+		<br>
+		<div id="controlsPanelActions"></div>
+		<br>
+		<div id="timbreSpaceButtons"></div>
 	</div>
 
 	<!-- JS -->
@@ -114,6 +97,8 @@
 			PRESET_SPACE = new PresetSpace();
 			drawPresetSpaceControls();
 			document.getElementById("buildSpaceBtnId").click();
+
+			toggleBottomPanel(); // Initially close bottom controls panel
 		}
 	</script>
 </body>
