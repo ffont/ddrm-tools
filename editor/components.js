@@ -171,7 +171,11 @@ function Control(name, section, layoutRow, color, type, nTicks, midiCC, byteNumb
                     return `${self.name}: ${self.displayValueFunc(self.getValue(), self.getMIDIValue(), self.getNormValue())}`;
                 }
             });
-            self.sliderUI.setValue(self.getValue());
+            var sliderQuantizedValue = 0;  // Display value quantized to on/off (see utils.rangeOnOff())
+            if (self.displayValueFunc(self.getValue(), self.getMIDIValue(), self.getNormValue()) === 'OFF'){
+                sliderQuantizedValue = 255;
+            }
+            self.sliderUI.setValue(sliderQuantizedValue);
             self.sliderUI.sliderElem.style['height'] = `${SWITCH2_HEIGHT}px`; // NOTE: don't scale here //`${Math.floor(SWITCH2_HEIGHT * SYNTH_UI_SCALE_FACTOR)}px`;
             self.sliderUI.sliderElem.style['margin-top'] = `${Math.floor(SWITCH2_MARGIN_TOP * SYNTH_UI_SCALE_FACTOR)}px`;
 
