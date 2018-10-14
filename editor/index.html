@@ -19,6 +19,8 @@
 
 	<div id="header">
 		<img src="logo.svg" alt="Deckard's Dream Timbre Space Demo" title="Deckard's Dream Timbre Space Demo"/>
+		<br>
+		Base space on: <a id="factorySpaceButton" href="javascript:void(0);" onclick="setFactoryPresetsSpace();">Factory presets</a> | <a id="cs80SpaceButton" href="javascript:void(0);" onclick="setCS80Space();">Paul's CS80 bank</a>
 	</div>
 
 	<div id="timbreSpacePad"></div>
@@ -82,7 +84,7 @@
 			PRESET_MANAGER = new PresetManager();
 
 			loadBankFromBytesArray("Factory Presets", FACTORY_BANK_BYTES);
-			//loadBankFromBytesArray("Paul Shilling's CS80 presets", CS80_BANK_BYTES);
+			loadBankFromBytesArray("Paul Shilling's CS80 presets", CS80_BANK_BYTES);
 			drawPresetControls();
 			drawPresetManagerControls();
 
@@ -95,10 +97,38 @@
 			});
 
 			PRESET_SPACE = new PresetSpace();
-			drawPresetSpaceControls();
-			document.getElementById("buildSpaceBtnId").click();
+			//drawPresetSpaceControls();
+			//document.getElementById("buildSpaceBtnId").click();
+
+			setFactoryPresetsSpace();
 
 			toggleBottomPanel(); // Initially close bottom controls panel
+		}
+
+		function setFactoryPresetsSpace(){
+			document.getElementById("factorySpaceButton").style.textDecoration = "underline";
+			document.getElementById("cs80SpaceButton").style.textDecoration = "none";
+			blockUI();
+			setTimeout(() => { // Using a timeout here so blockUI() is rendered before browser is busy computing maps
+				PRESET_SPACE.createSpace(PRESET_MANAGER.getPresetsDictionary()['Factory Presets'], function () {
+					unblockUI();
+					drawPresetSpacePad();
+					drawPresetSpaceControls();
+				});
+			}, 200);
+		}
+
+		function setCS80Space() {
+			document.getElementById("cs80SpaceButton").style.textDecoration = "underline";
+			document.getElementById("factorySpaceButton").style.textDecoration = "none";
+			blockUI();
+			setTimeout(() => { // Using a timeout here so blockUI() is rendered before browser is busy computing maps
+				PRESET_SPACE.createSpace(PRESET_MANAGER.getPresetsDictionary()["Paul Shilling's CS80 presets"], function () {
+					unblockUI();
+					drawPresetSpacePad();
+					drawPresetSpaceControls();
+				});
+			}, 200);
 		}
 	</script>
 </body>

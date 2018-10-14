@@ -102,7 +102,7 @@ function PresetSpace() {
             ]);
         }
 
-        console.log(`Finished creating preset space with ${presetList.length} presets`);
+        console.log(`Finished creating preset space with ${X.length} presets`);
         if (callback !== undefined) {
             callback(); // Call callback if provided
         }
