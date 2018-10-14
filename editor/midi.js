@@ -12,6 +12,7 @@ function initMIDI(controlsElement){
     WebMidi.enable(function (err) {
         if (err) {
             console.log("WebMidi could not be enabled. Please try using Google Chrome.", err);
+            alert("Oups, looks like WebMidi is not supported in this browser, please try with Google Chrome!");
             var midiErrorDiv = document.createElement("div");
             midiErrorDiv.innerHTML = '<p>Oups! WebMidi could not be enabled :( <br> Please try using Google Chrome.</p>';
             controlsElement.appendChild(midiErrorDiv);

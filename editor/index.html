@@ -18,6 +18,7 @@
 	<div id="timbreSpaceBgPad"></div>
 
 	<div id="header">
+		<div id="aboutButton"><a href="javascript:void(0);" onclick="showSettingsModal()">about</a></div>
 		<img src="logo.svg" alt="Deckard's Dream Timbre Space Demo" title="Deckard's Dream Timbre Space Demo"/>
 		<br>
 		Base space on: <a id="factorySpaceButton" href="javascript:void(0);" onclick="setFactoryPresetsSpace();">Factory presets</a> | <a id="cs80SpaceButton" href="javascript:void(0);" onclick="setCS80Space();">Paul's CS80 bank</a>
@@ -25,8 +26,15 @@
 
 	<div id="timbreSpacePad"></div>
 
-	<div id="midiSettingsModal" style="display:none;">
-		<div id="midiSettings"></div>
+	<div id="settingsModal" style="display:none;">
+		<div id="innerModal">
+			<b>About Deckard's Dream Timbre Space</b>
+			<p>bla bla bla</p>
+			<br>
+			<div id="midiSettings"></div>
+			<br><br>
+			<a href="javascript:void(0);" onclick="hideSettingsModal()">close</a>
+		</div>
 	</div>
 
 	<div id="bottomPanel">
@@ -99,9 +107,8 @@
 			PRESET_SPACE = new PresetSpace();
 			//drawPresetSpaceControls();
 			//document.getElementById("buildSpaceBtnId").click();
-
 			setFactoryPresetsSpace();
-
+			
 			toggleBottomPanel(); // Initially close bottom controls panel
 		}
 
@@ -130,6 +137,15 @@
 				});
 			}, 200);
 		}
+
+		function showSettingsModal(){
+			document.getElementById("settingsModal").style.display = "block";
+		}
+
+		function hideSettingsModal() {
+			document.getElementById("settingsModal").style.display = "none";
+		}
+
 	</script>
 </body>
 
