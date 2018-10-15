@@ -92,6 +92,7 @@ canvas:focus{
 
 #bottomPanelToggleControls a {
 	color: white;
+	text-decoration: none;
 }
 
 #aboutButton {
