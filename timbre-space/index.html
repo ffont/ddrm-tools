@@ -10,7 +10,7 @@
 	<link rel="stylesheet" href="3rdparty/bootstrap-slider.min.css">
 	<link rel="stylesheet" href="all.css">
 
-	<title>DDRM Timbre Space Demo</title>
+	<title>DDRM Timbre Space</title>
 </head>
 
 <body onload="init();">
@@ -18,8 +18,8 @@
 	<div id="timbreSpaceBgPad"></div>
 
 	<div id="header">
-		<div id="aboutButton"><a href="javascript:void(0);" onclick="showSettingsModal()">about</a></div>
-		<img src="logo.svg" alt="Deckard's Dream Timbre Space Demo" title="Deckard's Dream Timbre Space Demo"/>
+		<div id="aboutButton"><a href="javascript:void(0);" onclick="showSettingsModal()">help + about</a></div>
+		<img src="logo.svg" alt="Deckard's Dream Timbre Space" title="Deckard's Dream Timbre Space"/>
 		<br>
 		Base space on: <a id="factorySpaceButton" href="javascript:void(0);" onclick="setFactoryPresetsSpace();">Factory presets</a> | <a id="cs80SpaceButton" href="javascript:void(0);" onclick="setCS80Space();">Paul's CS80 bank</a>
 	</div>
@@ -28,11 +28,26 @@
 
 	<div id="settingsModal" style="display:none;">
 		<div id="innerModal">
-			<b>About Deckard's Dream Timbre Space</b>
-			<p>bla bla bla</p>
-			<br>
+			<p><b>About Deckard's Dream Timbre Space</b></p>
+			<p>Deckard's Dream Timbre Space provides a new way to explore the sonic possibilities of DDRM.
+				Just click anywhere on the colourful space and play the synth. Click on another point to get a new
+				preset. Close points in the space will result in similar sounding presets. 
+			</p>
+			<p>You can switch between a timbre space based on DDRM's factory presets or a timbre space based on
+				Paul Shilling's great CS80 patches. Every time you chose one of these, a new map is created which
+				might end up being different from the preivous one (even if based on the same presets).
+				Make sure that your DDRM is <b>connected to the computer and can receive MIDI messages</b> at this port:
+			</p>
 			<div id="midiSettings"></div>
-			<br><br>
+			<br>
+			<p><b>Credits</b></p>
+			<p> The DDRM Timbre Space has been created by <a href="https://ffont.github.io/">Frederic Font</a>.
+				The graphics of the timbre space are drawn using <a href="https://github.com/ffont/ddrm-tools/blob/master/editor/3rdparty/graphics.js">some
+					code</a>
+				written by the great <a href="https://github.com/jagenjo">Javi Agenjo</a>. Dimensionality reduction uses <a href="https://github.com/karpathy/tsnejs">tSNEJS</a>
+				code by <a href="https://github.com/karpathy">karpathy</a>. Thanks to Paul Shiling for allowing me to use the great CS80 presets he programmed for the DDRM.
+			</p>
+			<br>
 			<a href="javascript:void(0);" onclick="hideSettingsModal()">close</a>
 		</div>
 	</div>
@@ -113,8 +128,8 @@
 		}
 
 		function setFactoryPresetsSpace(){
-			document.getElementById("factorySpaceButton").style.textDecoration = "underline";
-			document.getElementById("cs80SpaceButton").style.textDecoration = "none";
+			document.getElementById("factorySpaceButton").style.fontWeight = "bold";
+			document.getElementById("cs80SpaceButton").style.fontWeight = "300";
 			blockUI();
 			setTimeout(() => { // Using a timeout here so blockUI() is rendered before browser is busy computing maps
 				PRESET_SPACE.createSpace(PRESET_MANAGER.getPresetsDictionary()['Factory Presets'], function () {
@@ -126,8 +141,8 @@
 		}
 
 		function setCS80Space() {
-			document.getElementById("cs80SpaceButton").style.textDecoration = "underline";
-			document.getElementById("factorySpaceButton").style.textDecoration = "none";
+			document.getElementById("cs80SpaceButton").style.fontWeight = "bold";
+			document.getElementById("factorySpaceButton").style.fontWeight = "300";
 			blockUI();
 			setTimeout(() => { // Using a timeout here so blockUI() is rendered before browser is busy computing maps
 				PRESET_SPACE.createSpace(PRESET_MANAGER.getPresetsDictionary()["Paul Shilling's CS80 presets"], function () {

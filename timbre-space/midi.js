@@ -2,6 +2,7 @@
 /* MIDI */
 
 var ENABLE_SYSEX = false;
+var ENABLE_MIDI_IN = false;
 var midiOutputDevice = undefined;
 var midiInputDevice = undefined;
 var midiChannel = undefined;
@@ -49,9 +50,10 @@ function initMIDI(controlsElement){
 
             midiInputControlsDiv.appendChild(midiInputsLabel)
             midiInputControlsDiv.appendChild(midiInputsSelect)
-            controlsElement.appendChild(midiInputControlsDiv)
+            if (ENABLE_MIDI_IN){
+                controlsElement.appendChild(midiInputControlsDiv)
+            }
 
-            
             // Connect MIDI output devices and create controls
             var midiOutputControlsDiv = document.createElement("div");
             
@@ -184,7 +186,7 @@ function shouldPassControlChangeMessage(ccNumber, ccValue, channel){
 function receiveControlChangeMessage(ccNumber, ccValue, channel){
    
     // Apply filtering due to bug in Deckard's Dream MIDI out (sliders jitter)
-    var allowMessage = shouldPassControlChangeMessage(ccNumber, ccValue, channel)
+    var allowMessage = shouldPassControlChangeMessage(ccNumber, ccValue, channel) && ENABLE_MIDI_IN;
     
     if (allowMessage){
         console.log(`Received MIDI CC message from ch${channel} ${ccNumber} ${ccValue}`);
