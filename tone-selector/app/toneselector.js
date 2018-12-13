@@ -2,30 +2,30 @@ var currentToneUp = undefined;
 var currentToneDown = undefined;
 
 var TONES_UP = [
-    ['String 1', 'y', 'string1'],
-    ['String 3', 'y', 'string3'],
-    ['Brass 1', 'r', 'brass1'],
+    ['String\n1', 'y', 'string1'],
+    ['String\n3', 'y', 'string3'],
+    ['Brass\n1', 'r', 'brass1'],
     ['Flute', 'w', 'flute'],
     ['Electric Piano', 'y', 'epiano'],
-    ['Clavi-\nchord 1', 'y', 'clav1'],
-    ['Harpsi-\nchord 1', 'y', 'harpsi1'],
-    ['Organ 1', 'w', 'organ1'],
-    ['Guitar 1', 'y', 'guitar1'],
-    ['Funky 1', 'g', 'funky1'],
-    ['Funky 3', 'g', 'funky3']
+    ['Clavi-\nchord\n1', 'y', 'clav1'],
+    ['Harpsi-\nchord\n1', 'y', 'harpsi1'],
+    ['Organ\n1', 'w', 'organ1'],
+    ['Guitar\n1', 'y', 'guitar1'],
+    ['Funky\n1', 'g', 'funky1'],
+    ['Funky\n3', 'g', 'funky3']
 ];
 var TONES_DOWN = [
-    ['String 2', 'y', 'string2'],
-    ['String 4', 'y', 'string4'],
-    ['Brass 2', 'r', 'brass2'],
-    ['Brass 3', 'r', 'brass3'],
+    ['String\n2', 'y', 'string2'],
+    ['String\n4', 'y', 'string4'],
+    ['Brass\n2', 'r', 'brass2'],
+    ['Brass\n3', 'r', 'brass3'],
     ['Bass', 'y', 'bass'],
-    ['Clavi-\nchord 2', 'y', 'clav2'],
-    ['Harpsi-\nchord 2', 'y', 'harpsi2'],
-    ['Organ 2', 'w', 'organ2'],
-    ['Guitar 2', 'y', 'guitar2'],
-    ['Funky 2', 'g', 'funky2'],
-    ['Funky 4', 'g', 'funky4']
+    ['Clavi-\nchord\n2', 'y', 'clav2'],
+    ['Harpsi-\nchord\n2', 'y', 'harpsi2'],
+    ['Organ\n2', 'w', 'organ2'],
+    ['Guitar\n2', 'y', 'guitar2'],
+    ['Funky\n2', 'g', 'funky2'],
+    ['Funky\n4', 'g', 'funky4']
 ];
 var BANK_INDEX = [
     ['1', 'string1', 'string2'],
