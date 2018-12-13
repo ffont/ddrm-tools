@@ -30,6 +30,8 @@
 		<div id="innerModal">
 			<p><b>About Deckard's Dream CS80 Tone Selector</b></p>
 			<p>TODO...
+				say funky 4 is broken...
+				add button to toggle send performance controls
 			</p>
 			<p>
 				Make sure that your DDRM is <b>connected to the computer and can receive MIDI messages</b> at this port:
@@ -71,11 +73,20 @@
 
 			PRESET_MANAGER = new PresetManager();
 			loadBankFromBytesArray("Paul Shilling's CS80 presets", CS80_BANK_BYTES);
-			
-			initToneSelector();
-			drawToneSelector();
+			PRESET_MANAGER.setCurrentPresetToFirstPreset();
 
-			updateCurrentPreset();
+			// Init with a preset which has performance controls to "null"
+			var performanceControlsBlankPreset = new Preset("Performance Controls Blank");
+			performanceControlsBlankPreset.init(PERFORMANCE_CONTROLS_BLANK_PRESET_BYTES);
+			PRESET_MANAGER.currentPreset = performanceControlsBlankPreset;
+			PRESET_MANAGER.currentPreset.sendPerformanceControlsMIDI();
+			drawPresetControls();
+			
+			// Now init tone selector and auto select the default combination
+			initToneSelector();  // Set default current tone up and tone down
+			drawToneSelector();
+			updateChannel1();  // Init channel 1 to current tone up, will send MIDI as well
+			updateChannel2(); // Init channel 2 to current tone down, will send MIDI as well
 		}
 		function showSettingsModal(){
 			document.getElementById("settingsModal").style.display = "block";

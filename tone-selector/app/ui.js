@@ -198,8 +198,14 @@ function createTrFromTones(tones, selectedToneID, toneType, trTitle) {
         if (toneID === selectedToneID) {
             klass += ' selected';
         }
+        if (toneID === 'funky4') {
+            klass = 'button-disabled';
+        }
         td.setAttribute('class', klass);
-        td.setAttribute('onclick', 'pressToneButton(\'' + toneType + '\', \'' + toneID + '\')')
+        if (toneID !== 'funky4') {
+            // Add click handler excpet for funky4 which has not been programmed
+            td.setAttribute('onclick', 'pressToneButton(\'' + toneType + '\', \'' + toneID + '\')')
+        }
         tr.appendChild(td)
     }
     return tr;
@@ -208,6 +214,6 @@ function createTrFromTones(tones, selectedToneID, toneType, trTitle) {
 function drawToneSelector() {
     var table = document.getElementById("buttonGrid");
     table.innerHTML = '';
-    table.appendChild(createTrFromTones(TONES_UP, currentToneUp[2], 'toneUp', 'I'));
-    table.appendChild(createTrFromTones(TONES_DOWN, currentToneDown[2], 'toneDown', 'II'));
+    table.appendChild(createTrFromTones(TONES_UP, CURRENT_TONE_UP[2], 'toneUp', 'I'));
+    table.appendChild(createTrFromTones(TONES_DOWN, CURRENT_TONE_DOWN[2], 'toneDown', 'II'));
 }

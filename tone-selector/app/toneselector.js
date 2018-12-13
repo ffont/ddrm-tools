@@ -1,5 +1,6 @@
-var currentToneUp = undefined;
-var currentToneDown = undefined;
+var CURRENT_TONE_UP = undefined;
+var CURRENT_TONE_DOWN = undefined;
+var UPDATE_PERFORMANCE_CONTROLS = false;
 
 var TONES_UP = [
     ['String\n1', 'y', 'string1'],
@@ -141,10 +142,34 @@ var BANK_INDEX = [
     ['119', 'funky3', 'funky2']
 ];
 
+var PRESET_REFERENCES = {
+    'string1': 1,  // channel 1
+    'string3': 2,
+    'brass1': 3,
+    'flute': 4,
+    'epiano': 5,
+    'clav1': 6,
+    'harpsi1': 7,
+    'organ1': 8,
+    'guitar1': 9,
+    'funky1': 10,
+    'funky3': 11,
+    'string2': 1, // channel 2
+    'string4': 2,
+    'brass2': 3,
+    'brass3': 4,
+    'bass': 5,
+    'clav2': 6,
+    'harpsi2': 7,
+    'organ2': 8,
+    'guitar2': 9,
+    'funky2': 10,
+    'funky4': 11
+};
 
 function initToneSelector(){
-    currentToneUp = TONES_UP[0];
-    currentToneDown = TONES_DOWN[0];
+    CURRENT_TONE_UP = TONES_UP[0];
+    CURRENT_TONE_DOWN = TONES_DOWN[0];
 }
 
 function getPCNumberFromTonePair(toneUp, toneDown) {
@@ -157,6 +182,10 @@ function getPCNumberFromTonePair(toneUp, toneDown) {
     return pcNumber - 1;  // subtract 1 as in preset bank presets are 0-indexed
 }
 
+function getPresetReferenceForTone(toneID){
+    return PRESET_MANAGER.getFlatListOfPresets()[PRESET_REFERENCES[toneID] - 1];
+}
+
 function getToneFromId(tones, toneID) {
     for (var i in tones) {
         if (tones[i][2] === toneID) {
@@ -167,22 +196,45 @@ function getToneFromId(tones, toneID) {
 
 function pressToneButton(toneType, toneID) {
     if (toneType === 'toneUp') {
-        currentToneUp = getToneFromId(TONES_UP, toneID);
-        console.log('New tone up:', currentToneUp);
+        CURRENT_TONE_UP = getToneFromId(TONES_UP, toneID);
     } else if (toneType === 'toneDown') {
-        currentToneDown = getToneFromId(TONES_DOWN, toneID);
-        console.log('New tone down:', currentToneDown);
+        CURRENT_TONE_DOWN = getToneFromId(TONES_DOWN, toneID);
     }
     drawToneSelector();
+
     setTimeout(() => {
         // Using a very short setTimeout so tone selector UI is updated immediately and UI is more responsive
-        updateCurrentPreset();    
+        if (toneType === 'toneUp') {
+            updateChannel1();
+        } else {
+            updateChannel2();
+        }
+        if (UPDATE_PERFORMANCE_CONTROLS) {
+            updatePerformanceControls();
+        }
+        //drawPresetControls();
     }, 10);
 }
 
-function updateCurrentPreset(){
-    var presetIdx = getPCNumberFromTonePair(currentToneUp, currentToneDown);
-    PRESET_MANAGER.setCurrentPresetFromIdx(presetIdx);
-    PRESET_MANAGER.currentPreset.sendMIDI();
-    drawPresetControls();
+function updateChannel1() {
+    var referencePreset = getPresetReferenceForTone(CURRENT_TONE_UP[2]);
+    PRESET_MANAGER.currentPreset.copyChannel1ValuesFromPreset(referencePreset);
+    PRESET_MANAGER.currentPreset.sendChannel1MIDI();
+}
+
+function updateChannel2() {
+    var referencePreset = getPresetReferenceForTone(CURRENT_TONE_DOWN[2]);
+    PRESET_MANAGER.currentPreset.copyChannel2ValuesFromPreset(referencePreset);
+    PRESET_MANAGER.currentPreset.sendChannel1MIDI();
+}
+
+function updatePerformanceControls() {
+    var presetIdx = getPCNumberFromTonePair(CURRENT_TONE_UP, CURRENT_TONE_DOWN); // Perfromance controls are for a combination of two presets
+    var referencePreset = PRESET_MANAGER.getFlatListOfPresets()[presetIdx];
+    if (referencePreset !== undefined){
+        PRESET_MANAGER.currentPreset.copyPerformanceControlValuesFromPreset(referencePreset);
+        PRESET_MANAGER.currentPreset.sendPerformanceControlsMIDI();
+    } else {
+        console.log('Did not find combination for performance controls');
+    }
 }

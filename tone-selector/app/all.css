@@ -258,6 +258,12 @@ label {
 	color: white;
 }
 
+.button-disabled {
+	background-color: rgb(123, 143, 137);
+	filter: brightness(70%);
+	color: white;
+}
+
 .selected {
 	filter: brightness(110%);
 }

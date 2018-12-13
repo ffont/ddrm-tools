@@ -319,6 +319,25 @@ function Preset(name, author, categories, timestamp, id) {
             self.midiCCLookup[controlDef.midi] = control;
         }
     }
+    this.copyLayoutRowValuesFromPreset = function (presetFrom, layoutRow) {
+        for (var i in self.controls) {
+            var control = self.controls[i];
+            if (control.layoutRow === layoutRow) {
+                var controlFrom = presetFrom.controls[i];
+                control.setValue(controlFrom.getValue(), false);
+                control.updateUI();
+            }
+        }
+    }
+    this.copyChannel1ValuesFromPreset = function(presetFrom){
+        self.copyLayoutRowValuesFromPreset(presetFrom, 1);
+    }
+    this.copyChannel2ValuesFromPreset = function (presetFrom) {
+        self.copyLayoutRowValuesFromPreset(presetFrom, 2);
+    }
+    this.copyPerformanceControlValuesFromPreset = function (presetFrom) {
+        self.copyLayoutRowValuesFromPreset(presetFrom, 3);
+    }
     this.getControlValuesAsArray = function () {
 
         // Create template with empty byte values
@@ -343,19 +362,30 @@ function Preset(name, author, categories, timestamp, id) {
         }
         return hexStringBytes;
     }
-    this.sendMIDI = function() {
+    this.sendMIDI = function(layoutRow) {
         // Send MIDI values of all individual controls
         for (var control of self.controls){
-            control.sendMIDI();
+            if ((layoutRow === undefined) || (layoutRow === control.layoutRow)){
+                control.sendMIDI();
+            }
         }
         //console.log('Sent MIDI CC values to synth'); 
+    }
+    this.sendChannel1MIDI = function (){
+        self.sendMIDI(1);
+    }
+    this.sendChannel2MIDI = function () {
+        self.sendMIDI(2);
+    }
+    this.sendPerformanceControlsMIDI = function () {
+        self.sendMIDI(3);
     }
     this.receiveControlChange = function(ccNumber, ccValue) {
         if (ccNumber !== 100){
             // DDRM sends midi ccNumber 100 for feet 1, feet 2 and glide mode controls, this is bug as it should send 102 and 103 according to spec
             var control = self.midiCCLookup[ccNumber];
             control.setValue(ccValue * 2, false);  // Scale value to  0-255 range
-            control.updateUI();    
+            control.updateUI();
         }
     }
     this.save = function(remove, store, callback) {
@@ -633,7 +663,7 @@ function PresetManager() {
         }
     }
 
-    this.setCurrentPresetFromIdx = function (presetIdx) {
+    this.setCurrentPresetFromIdx = function(presetIdx) {
         var allPresets = self.getFlatListOfPresets();
         if (allPresets.length >= presetIdx) {
             self.currentPreset = allPresets[presetIdx];
