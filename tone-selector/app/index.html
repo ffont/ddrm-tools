@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" href="3rdparty/bootstrap.min.css">
+	<link rel="stylesheet" href="3rdparty/bootstrap-slider.min.css">
+	<link rel="stylesheet" href="all.css">
+
+	<title>DDRM CS80 Tone Selector</title>
+</head>
+
+<body onload="init();">
+
+	<div id="timbreSpaceBgPad"></div>
+
+	<div id="header">
+		<div id="aboutButton"><a href="javascript:void(0);" onclick="showSettingsModal()">help + about</a></div>
+		<img src="logo.svg" alt="Deckard's Dream CS80 Tone Selector" title="Deckard's Dream CS80 Tone Selector" draggable="false"/>
+	</div>
+	
+	<div class="wrapper">
+		<table id="buttonGrid"></table>
+	</div>
+	
+	<div id="settingsModal" style="display:none;">
+		<div id="innerModal">
+			<p><b>About Deckard's Dream CS80 Tone Selector</b></p>
+			<p>TODO...
+			</p>
+			<p>
+				Make sure that your DDRM is <b>connected to the computer and can receive MIDI messages</b> at this port:
+			</p>
+			<div id="midiSettings"></div>
+			<br>
+			<p><b>Credits</b></p>
+			<p>
+				The DDRM CS80 Tone Selector has been created by <a href="https://ffont.github.io/">Frederic Font</a> using the amazing CS80 DDRM presets programmed by <a href="">Paul Shiling</a>.
+				Without Paul's presets this would have not been possible at all Thanks!.
+			</p>
+			<br>
+			<a href="javascript:void(0);" onclick="hideSettingsModal()">close</a>
+		</div>
+	</div>
+
+	<div id="bottomPanel">
+		<div id="bottomPanelToggleControls">
+			<a href="javascript:void(0);" id="bottomPanelToggleControlsAnchor" onclick="toggleBottomPanel()"></a>	
+		</div>
+		<div id="synthControls"></div>
+	</div>
+
+	<!-- JS -->
+	<script type='text/javascript' src='3rdparty/jquery.min.js'></script>
+	<script type='text/javascript' src='3rdparty/bootstrap.min.js'></script>
+	<script type='text/javascript' src='3rdparty/bootstrap-slider.min.js'></script>
+	<script type='text/javascript' src='3rdparty/webmidi.min.js'></script>
+	<script type='text/javascript' src='globals.js'></script>
+	<script type='text/javascript' src='utils.js'></script>
+	<script type='text/javascript' src='midi.js'></script>
+	<script type='text/javascript' src='components.js'></script>
+	<script type='text/javascript' src='ui.js'></script>
+	<script type='text/javascript' src='toneselector.js'></script>
+	<script type='text/javascript'>
+		function init() {
+			initMIDI(document.getElementById("midiSettings"));
+			SYNTH_UI_SCALE_FACTOR = 0.52;  // Use a fixed scale. Can also be automatically adjusted using autoAdjustUIScaleFactor()
+
+			PRESET_MANAGER = new PresetManager();
+			loadBankFromBytesArray("Paul Shilling's CS80 presets", CS80_BANK_BYTES);
+			
+			initToneSelector();
+			drawToneSelector();
+
+			updateCurrentPreset();
+		}
+		function showSettingsModal(){
+			document.getElementById("settingsModal").style.display = "block";
+		}
+
+		function hideSettingsModal() {
+			document.getElementById("settingsModal").style.display = "none";
+		}
+
+	</script>
+</body>
+
+</html>
