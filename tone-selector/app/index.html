@@ -25,6 +25,7 @@
 	<div class="wrapper">
 		<table id="buttonGrid"></table>
 	</div>
+	<div id="messagesOut"></div>
 	
 	<div id="settingsModal" style="display:none;">
 		<div id="innerModal">
@@ -76,17 +77,16 @@
 			PRESET_MANAGER.setCurrentPresetToFirstPreset();
 
 			// Init with a preset which has performance controls to "null"
-			var performanceControlsBlankPreset = new Preset("Performance Controls Blank");
-			performanceControlsBlankPreset.init(PERFORMANCE_CONTROLS_BLANK_PRESET_BYTES);
-			PRESET_MANAGER.currentPreset = performanceControlsBlankPreset;
-			PRESET_MANAGER.currentPreset.sendPerformanceControlsMIDI();
+			var allMidPreset = new Preset("All to middle preset");
+			allMidPreset.init(ALL_MID_PRESET);
+			PRESET_MANAGER.currentPreset = allMidPreset;
 			drawPresetControls();
-			
-			// Now init tone selector and auto select the default combination
-			initToneSelector();  // Set default current tone up and tone down
+
 			drawToneSelector();
-			updateChannel1();  // Init channel 1 to current tone up, will send MIDI as well
-			updateChannel2(); // Init channel 2 to current tone down, will send MIDI as well
+			// Now init tone selector and auto select the default combination
+			//initToneSelector();  // Set default current tone up and tone down
+			//updateChannel1();  // Init channel 1 to current tone up, will send MIDI as well
+			//updateChannel2(); // Init channel 2 to current tone down, will send MIDI as well
 		}
 		function showSettingsModal(){
 			document.getElementById("settingsModal").style.display = "block";

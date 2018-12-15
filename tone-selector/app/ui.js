@@ -205,6 +205,8 @@ function createTrFromTones(tones, selectedToneID, toneType, trTitle) {
         if (toneID !== 'funky4') {
             // Add click handler excpet for funky4 which has not been programmed
             td.setAttribute('onclick', 'pressToneButton(\'' + toneType + '\', \'' + toneID + '\')')
+        } else {
+            td.setAttribute('onclick', 'showMessage(\'Oups, this button seems to be broken :(\')')
         }
         tr.appendChild(td)
     }

@@ -1,5 +1,5 @@
-var CURRENT_TONE_UP = undefined;
-var CURRENT_TONE_DOWN = undefined;
+var CURRENT_TONE_UP = [undefined, undefined, undefined];
+var CURRENT_TONE_DOWN = [undefined, undefined, undefined];
 var UPDATE_PERFORMANCE_CONTROLS = false;
 
 var TONES_UP = [
@@ -170,6 +170,7 @@ var PRESET_REFERENCES = {
 function initToneSelector(){
     CURRENT_TONE_UP = TONES_UP[0];
     CURRENT_TONE_DOWN = TONES_DOWN[0];
+    drawToneSelector();
 }
 
 function getPCNumberFromTonePair(toneUp, toneDown) {
@@ -219,13 +220,19 @@ function pressToneButton(toneType, toneID) {
 function updateChannel1() {
     var referencePreset = getPresetReferenceForTone(CURRENT_TONE_UP[2]);
     PRESET_MANAGER.currentPreset.copyChannel1ValuesFromPreset(referencePreset);
-    PRESET_MANAGER.currentPreset.sendChannel1MIDI();
+    if (midiOutputDevice !== undefined) {
+        PRESET_MANAGER.currentPreset.sendChannel1MIDI();
+        showMessage('Set Channel I sliders to ' + CURRENT_TONE_UP[0].toUpperCase());
+    }
 }
 
 function updateChannel2() {
     var referencePreset = getPresetReferenceForTone(CURRENT_TONE_DOWN[2]);
     PRESET_MANAGER.currentPreset.copyChannel2ValuesFromPreset(referencePreset);
-    PRESET_MANAGER.currentPreset.sendChannel1MIDI();
+    if (midiOutputDevice !== undefined){
+        PRESET_MANAGER.currentPreset.sendChannel1MIDI();
+        showMessage('Set Channel II sliders to ' + CURRENT_TONE_DOWN[0].toUpperCase());
+    }
 }
 
 function updatePerformanceControls() {
@@ -233,8 +240,25 @@ function updatePerformanceControls() {
     var referencePreset = PRESET_MANAGER.getFlatListOfPresets()[presetIdx];
     if (referencePreset !== undefined){
         PRESET_MANAGER.currentPreset.copyPerformanceControlValuesFromPreset(referencePreset);
-        PRESET_MANAGER.currentPreset.sendPerformanceControlsMIDI();
+        if (midiOutputDevice !== undefined) {
+            PRESET_MANAGER.currentPreset.sendPerformanceControlsMIDI();
+            showMessage('Set performance controls to combination of ' + CURRENT_TONE_UP[0].toUpperCase() + ' and ' + CURRENT_TONE_DOWN[0].toUpperCase());
+        }
     } else {
         console.log('Did not find combination for performance controls');
     }
+}
+
+var MESSAGE_TIMER = undefined;
+function showMessage(message) {
+    if (MESSAGE_TIMER !== undefined){
+        clearTimeout(MESSAGE_TIMER);
+    }
+
+    var element = document.getElementById('messagesOut');
+    element.innerHTML = message;
+
+    MESSAGE_TIMER = setTimeout(() => {
+        element.innerHTML = '';
+    }, 2000);
 }
