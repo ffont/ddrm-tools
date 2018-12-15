@@ -18,7 +18,7 @@
 	<div id="timbreSpaceBgPad"></div>
 
 	<div id="header">
-		<div id="aboutButton"><a href="javascript:void(0);" onclick="showSettingsModal()">help + about</a></div>
+		<div id="aboutButton"><a href="javascript:void(0);" onclick="showSettingsModal()">about</a></div>
 		<img src="logo.svg" alt="Deckard's Dream CS80 Tone Selector" title="Deckard's Dream CS80 Tone Selector" draggable="false"/>
 	</div>
 	
@@ -29,7 +29,9 @@
 	
 	<div id="settingsModal" style="display:none;">
 		<div id="innerModal">
-			<p><b>About Deckard's Dream CS80 Tone Selector</b></p>
+			<img src="logo.svg" alt="Deckard's Dream CS80 Tone Selector" title="Deckard's Dream CS80 Tone Selector" draggable="false" />
+			<br><br>
+			<p><b>About</b></p>
 			<p>TODO...
 				say funky 4 is broken...
 				add button to toggle send performance controls
@@ -41,7 +43,7 @@
 			<br>
 			<p><b>Credits</b></p>
 			<p>
-				The DDRM CS80 Tone Selector has been created by <a href="https://ffont.github.io/">Frederic Font</a> using the amazing CS80 DDRM presets programmed by <a href="">Paul Shiling</a>.
+				The DDRM CS80 Tone Selector has been created by <a href="javascript:void(0);" onclick="shell.openExternal('https://ffont.github.io/');">Frederic Font</a> using the amazing CS80 DDRM presets programmed by <a href="javascript:void(0);" onclick="shell.openExternal('https://soundcloud.com/paul-schilling');">Paul Shiling</a>.
 				Without Paul's presets this would have not been possible at all Thanks!.
 			</p>
 			<br>
@@ -68,6 +70,8 @@
 	<script type='text/javascript' src='ui.js'></script>
 	<script type='text/javascript' src='toneselector.js'></script>
 	<script type='text/javascript'>
+		const shell = require('electron').shell;
+
 		function init() {
 			initMIDI(document.getElementById("midiSettings"));
 			SYNTH_UI_SCALE_FACTOR = 0.52;  // Use a fixed scale. Can also be automatically adjusted using autoAdjustUIScaleFactor()
