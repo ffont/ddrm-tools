@@ -10,12 +10,13 @@ function createWindow () {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1000, 
-    height: 660,
+    height: 690,
     backgroundColor: '#fff',
     icon: path.join(__dirname, 'assets/icons/png/64x64.png'),
     title: 'DDRM CS80 Tone Selector',
     webPreferences: {
       webSecurity: false,
+      nodeIntegration: false, 
     },
   })
 
@@ -25,7 +26,7 @@ function createWindow () {
   mainWindow.loadFile('index.html')
 
   // Open the DevTools.
-   mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {

@@ -43,7 +43,7 @@
 			<br>
 			<p><b>Credits</b></p>
 			<p>
-				The DDRM CS80 Tone Selector has been created by <a href="javascript:void(0);" onclick="shell.openExternal('https://ffont.github.io/');">Frederic Font</a> using the amazing CS80 DDRM presets programmed by <a href="javascript:void(0);" onclick="shell.openExternal('https://soundcloud.com/paul-schilling');">Paul Shiling</a>.
+				The DDRM CS80 Tone Selector has been created by <b>Frederic Font</b> using the amazing CS80 DDRM presets programmed by <b>Paul Shiling</b>.
 				Without Paul's presets this would have not been possible at all Thanks!.
 			</p>
 			<br>
@@ -70,8 +70,7 @@
 	<script type='text/javascript' src='ui.js'></script>
 	<script type='text/javascript' src='toneselector.js'></script>
 	<script type='text/javascript'>
-		const shell = require('electron').shell;
-
+	
 		function init() {
 			initMIDI(document.getElementById("midiSettings"));
 			SYNTH_UI_SCALE_FACTOR = 0.52;  // Use a fixed scale. Can also be automatically adjusted using autoAdjustUIScaleFactor()
