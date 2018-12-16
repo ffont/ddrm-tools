@@ -18,6 +18,14 @@ a:hover {
 	color: white;
 }
 
+a:visited {
+	color: white;
+}
+
+a:active {
+	color: white;
+}
+
 label {
 	color: white;
 }

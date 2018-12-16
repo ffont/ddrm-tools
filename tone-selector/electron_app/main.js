@@ -41,6 +41,11 @@ function createWindow () {
       event.preventDefault()
   });
 
+  // open target="_blank" links in browser
+  mainWindow.webContents.on('new-window', function(e, url) {
+    e.preventDefault();
+    require('electron').shell.openExternal(url);
+  });
 
   // Define contents of the menu (needed to enable copy & paste!)
 
