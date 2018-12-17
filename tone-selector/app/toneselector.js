@@ -220,6 +220,7 @@ function pressToneButton(toneType, toneID) {
 function updateChannel1() {
     var referencePreset = getPresetReferenceForTone(CURRENT_TONE_UP[2]);
     PRESET_MANAGER.currentPreset.copyChannel1ValuesFromPreset(referencePreset);
+    drawPresetControls();
     if (midiOutputDevice !== undefined) {
         PRESET_MANAGER.currentPreset.sendChannel1MIDI();
         showMessage('Set Channel I sliders to ' + CURRENT_TONE_UP[0].toUpperCase().replace('-\n', '-').replace('\n', ' '));
@@ -229,6 +230,7 @@ function updateChannel1() {
 function updateChannel2() {
     var referencePreset = getPresetReferenceForTone(CURRENT_TONE_DOWN[2]);
     PRESET_MANAGER.currentPreset.copyChannel2ValuesFromPreset(referencePreset);
+    drawPresetControls();
     if (midiOutputDevice !== undefined){
         PRESET_MANAGER.currentPreset.sendChannel1MIDI();
         showMessage('Set Channel II sliders to ' + CURRENT_TONE_DOWN[0].toUpperCase().replace('-\n', '-').replace('\n', ' '));
@@ -240,6 +242,7 @@ function updatePerformanceControls() {
     var referencePreset = PRESET_MANAGER.getFlatListOfPresets()[presetIdx];
     if (referencePreset !== undefined){
         PRESET_MANAGER.currentPreset.copyPerformanceControlValuesFromPreset(referencePreset);
+        drawPresetControls();
         if (midiOutputDevice !== undefined) {
             PRESET_MANAGER.currentPreset.sendPerformanceControlsMIDI();
             showMessage('Set performance controls to combination of ' + CURRENT_TONE_UP[0].toUpperCase() + ' and ' + CURRENT_TONE_DOWN[0].toUpperCase());
@@ -247,6 +250,14 @@ function updatePerformanceControls() {
     } else {
         console.log('Did not find combination for performance controls');
     }
+}
+
+function updateFromCombinedPreset() {
+    var presetIdx = getPCNumberFromTonePair(CURRENT_TONE_UP, CURRENT_TONE_DOWN); // Perfromance controls are for a combination of two presets
+    var referencePreset = PRESET_MANAGER.getFlatListOfPresets()[presetIdx];
+    PRESET_MANAGER.currentPreset = referencePreset;
+    PRESET_MANAGER.currentPreset.sendMIDI();
+    drawPresetControls();
 }
 
 var MESSAGE_TIMER = undefined;

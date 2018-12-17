@@ -17,8 +17,9 @@ const CONTROL_SLIDER_MARGIN_TOP = 15;
 const SWITCH2_MARGIN_TOP = 55;
 const SWITCH3_MARGIN_TOP = 57;
 
-function Control(name, section, layoutRow, color, type, nTicks, midiCC, byteNumber, displayValueFuncName) {
+function Control(id, name, section, layoutRow, color, type, nTicks, midiCC, byteNumber, displayValueFuncName) {
     var self = this;
+    this.id = id;
     this.name = name;
     this.section = section;
     this.layoutRow = layoutRow;
@@ -220,6 +221,7 @@ function Control(name, section, layoutRow, color, type, nTicks, midiCC, byteNumb
         self.setValue(value, true); // When users move virtual sliders, send MIDI values as well
     }
     this.setValue = function(value, sendMIDI) {
+        /* Set int value in original range (0-255) */
         self.value = value;
         if (sendMIDI === true) { 
             self.sendMIDI(); 
@@ -302,6 +304,7 @@ function Preset(name, author, categories, timestamp, id) {
         self.controls = [];
         for (var controlDef of CONTROLS_STRUCTURE){
             var control = new Control(
+                controlDef.id,
                 controlDef.name, 
                 controlDef.section, 
                 controlDef.layoutRow,
@@ -325,7 +328,6 @@ function Preset(name, author, categories, timestamp, id) {
             if (control.layoutRow === layoutRow) {
                 var controlFrom = presetFrom.controls[i];
                 control.setValue(controlFrom.getValue(), false);
-                control.updateUI();
             }
         }
     }
@@ -337,6 +339,42 @@ function Preset(name, author, categories, timestamp, id) {
     }
     this.copyPerformanceControlValuesFromPreset = function (presetFrom) {
         self.copyLayoutRowValuesFromPreset(presetFrom, 3);
+    }
+    this.getControlByID = function (controlID) {
+        for (control of self.controls){
+            if (control.id === controlID){
+                return control
+            }
+        }
+        return undefined;
+    }
+    this.getControlValue = function (controlID) {
+        var control = self.getControlByID(controlID);
+        if (control !== undefined){
+            return control.getValue();
+        }
+        return undefined;
+    }
+    this.getControlNormValue = function (controlID) {
+        var control = self.getControlByID(controlID);
+        if (control !== undefined) {
+            return control.getNormValue();
+        }
+        return undefined;
+    }
+    this.getControlMIDIValue = function (controlID) {
+        var control = self.getControlByID(controlID);
+        if (control !== undefined) {
+            return control.getMIDIValue();
+        }
+        return undefined;
+    }
+    this.setControlValue = function (controlID, value) {
+        var control = self.getControlByID(controlID);
+        if (control !== undefined) {
+            control.setValue(value);
+            control.updateUI();
+        }
     }
     this.getControlValuesAsArray = function () {
 
