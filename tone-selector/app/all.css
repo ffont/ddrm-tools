@@ -133,7 +133,7 @@ label {
 
 #settingsModal #innerModal {
     position: absolute;
-    top: 15%;
+    top: 70px;
 	left: 50%;
 	width: 400px;
 	height: 600px;

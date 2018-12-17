@@ -15,8 +15,7 @@ function createWindow () {
     icon: path.join(__dirname, 'assets/icons/png/64x64.png'),
     title: 'DDRM CS80 Tone Selector',
     webPreferences: {
-      webSecurity: false,
-      nodeIntegration: false, 
+      webSecurity: false
     },
   })
 

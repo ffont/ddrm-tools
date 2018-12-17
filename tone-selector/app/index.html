@@ -18,7 +18,7 @@
 	<div id="timbreSpaceBgPad"></div>
 
 	<div id="header">
-		<div id="aboutButton"><a href="javascript:void(0);" onclick="showSettingsModal()">about</a></div>
+		<div id="aboutButton"><a href="javascript:void(0);" onclick="showSettingsModal()">help</a></div>
 		<img src="logo.svg" alt="Deckard's Dream CS80 Tone Selector" title="Deckard's Dream CS80 Tone Selector" draggable="false"/>
 	</div>
 	
@@ -32,12 +32,13 @@
 			<img src="logo.svg" alt="Deckard's Dream CS80 Tone Selector" title="Deckard's Dream CS80 Tone Selector" draggable="false" />
 			<br><br>
 			<p><b>About</b></p>
-			<p>TODO...
-				say funky 4 is broken...
-				add button to toggle send performance controls
+			<p>
+				This <a href="https://www.youtube.com/watch?v=Yv4EADAHwOA" target="_blank">CS80-like tone slector</a> allows you to use the presetting system of CS80 in DDRM.
+				Simply <b>click on the buttons</b> of the upper row and lower row to configure slider positions for channel I and II respectively.
+				Have fun!
 			</p>
 			<p>
-				Make sure that your DDRM is <b>connected to the computer and can receive MIDI messages</b> at this port:
+				DDRM CS80 Tone Selector communicates with DDRM via MIDI. Make sure your DDRM is <b>connected to the computer and can receive MIDI messages</b> at this port:
 			</p>
 			<div id="midiSettings"></div>
 			<br>
@@ -60,6 +61,14 @@
 	</div>
 
 	<!-- JS -->
+	<script>
+		// This is to avoid problems loading jquery and some other libraries
+		// See https://electronjs.org/docs/faq#i-can-not-use-jqueryrequirejsmeteorangularjs-in-electron
+		window.nodeRequire = require;
+		delete window.require;
+		delete window.exports;
+		delete window.module;
+	</script>
 	<script type='text/javascript' src='3rdparty/jquery.min.js'></script>
 	<script type='text/javascript' src='3rdparty/bootstrap.min.js'></script>
 	<script type='text/javascript' src='3rdparty/bootstrap-slider.min.js'></script>

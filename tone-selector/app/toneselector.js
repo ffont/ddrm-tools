@@ -222,7 +222,7 @@ function updateChannel1() {
     PRESET_MANAGER.currentPreset.copyChannel1ValuesFromPreset(referencePreset);
     if (midiOutputDevice !== undefined) {
         PRESET_MANAGER.currentPreset.sendChannel1MIDI();
-        showMessage('Set Channel I sliders to ' + CURRENT_TONE_UP[0].toUpperCase());
+        showMessage('Set Channel I sliders to ' + CURRENT_TONE_UP[0].toUpperCase().replace('-\n', '-').replace('\n', ' '));
     }
 }
 
@@ -231,7 +231,7 @@ function updateChannel2() {
     PRESET_MANAGER.currentPreset.copyChannel2ValuesFromPreset(referencePreset);
     if (midiOutputDevice !== undefined){
         PRESET_MANAGER.currentPreset.sendChannel1MIDI();
-        showMessage('Set Channel II sliders to ' + CURRENT_TONE_DOWN[0].toUpperCase());
+        showMessage('Set Channel II sliders to ' + CURRENT_TONE_DOWN[0].toUpperCase().replace('-\n', '-').replace('\n', ' '));
     }
 }
 
