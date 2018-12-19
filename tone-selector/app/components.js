@@ -419,12 +419,9 @@ function Preset(name, author, categories, timestamp, id) {
         self.sendMIDI(3);
     }
     this.receiveControlChange = function(ccNumber, ccValue) {
-        if (ccNumber !== 100){
-            // DDRM sends midi ccNumber 100 for feet 1, feet 2 and glide mode controls, this is bug as it should send 102 and 103 according to spec
-            var control = self.midiCCLookup[ccNumber];
-            control.setValue(ccValue * 2, false);  // Scale value to  0-255 range
-            control.updateUI();
-        }
+        var control = self.midiCCLookup[ccNumber];
+        control.setValue(ccValue * 2, false);  // Scale value to  0-255 range
+        control.updateUI();
     }
     this.save = function(remove, store, callback) {
         var data = {};
@@ -474,6 +471,7 @@ function Preset(name, author, categories, timestamp, id) {
                     PRESET_MANAGER.setCurrentPresetToFirstPreset();
                 }
                 drawPresetControls();
+                drawPresetManagerControls();
                 if (callback !== undefined){
                     callback(); // Call callback if provided
                 }
@@ -567,7 +565,6 @@ function loadBankFile() {
             if (byteStr.length < 2) { byteStr = "0" + byteStr; }
             bytes.push(aByte);  // Loading number format
         }
-        console.log(bytes)
         var bankBytes = []
         for (var i=0; i<bytes.length; i=i+N_BYTES_PER_PRESET){
             bankBytes.push(bytes.slice(i, i + N_BYTES_PER_PRESET))
@@ -625,6 +622,7 @@ function PresetManager() {
                 self[saveToListVarName].push(preset);
             }
             console.log(`${self[saveToListVarName].length} presets loaded from ${store.name} store`);
+            drawPresetManagerControls();
             if (callback !== undefined){
                 callback();
             }
@@ -635,6 +633,7 @@ function PresetManager() {
         var bank = new FileBank();
         bank.loadPresetsFromBankBytes(bankBytes, bankName);
         self.fileBanks.push(bank);
+        drawPresetManagerControls();
     }
 
     this.getFlatListOfPresets = function(){

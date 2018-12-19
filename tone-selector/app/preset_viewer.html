@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" href="3rdparty/bootstrap.min.css">
+	<link rel="stylesheet" href="3rdparty/bootstrap-slider.min.css">
+	<link rel="stylesheet" href="all.css">
+
+	<title>DDRM Preset Viewer</title>
+</head>
+
+<body onload="init();">
+
+	<div id="header">
+		<div id="aboutButton"><a href="javascript:void(0);" onclick="showSettingsModal()">settings</a></div>
+		<h2>DDRM Preset Viewer</h2>
+	</div>
+
+	<div style="float:right;">
+		<label>Load presets from bank file:</label>
+		<form action='#' onsubmit="return false;">
+			<input type='file' id='fileinput'>
+			<button id='btnLoad' onclick='loadBankFile();'>Load</button>
+		</form>
+		<div id="presetManagerControls"></div>
+	</div>
+	
+	<div style="width:900px;margin-left:40px;">
+		<div id="synthControls"></div>
+		<br><br>
+		<div id="midiSettings" style="padding-left:40px;"></div>		
+	</div>
+
+	<!-- JS -->
+	<script>
+		// This is to avoid problems loading jquery and some other libraries
+		// See https://electronjs.org/docs/faq#i-can-not-use-jqueryrequirejsmeteorangularjs-in-electron
+		window.nodeRequire = require;
+		delete window.require;
+		delete window.exports;
+		delete window.module;
+	</script>
+	<script type='text/javascript' src='3rdparty/jquery.min.js'></script>
+	<script type='text/javascript' src='3rdparty/bootstrap.min.js'></script>
+	<script type='text/javascript' src='3rdparty/bootstrap-slider.min.js'></script>
+	<script type='text/javascript' src='3rdparty/webmidi.min.js'></script>
+	<script type='text/javascript' src='globals.js'></script>
+	<script type='text/javascript' src='utils.js'></script>
+	<script type='text/javascript' src='midi.js'></script>
+	<script type='text/javascript' src='components.js'></script>
+	<script type='text/javascript' src='ui.js'></script>
+	<script type='text/javascript' src='toneselector.js'></script>
+	<script type='text/javascript'>
+
+		ENABLE_MIDI_IN = true;
+	
+		function init() {
+			initMIDI(document.getElementById("midiSettings"));
+			SYNTH_UI_SCALE_FACTOR = 0.52;  // Use a fixed scale. Can also be automatically adjusted using autoAdjustUIScaleFactor()
+			PRESET_MANAGER = new PresetManager();
+			loadBankFromBytesArray("Paul Shilling's CS80 presets", CS80_BANK_BYTES);
+			PRESET_MANAGER.setCurrentPresetToFirstPreset();
+			drawPresetManagerControls();
+			drawPresetControls();
+		}
+		function showSettingsModal(){
+			document.getElementById("settingsModal").style.display = "block";
+		}
+
+		function hideSettingsModal() {
+			document.getElementById("settingsModal").style.display = "none";
+		}
+
+	</script>
+</body>
+
+</html>

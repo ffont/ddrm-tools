@@ -232,7 +232,7 @@ function updateChannel2() {
     PRESET_MANAGER.currentPreset.copyChannel2ValuesFromPreset(referencePreset);
     drawPresetControls();
     if (midiOutputDevice !== undefined){
-        PRESET_MANAGER.currentPreset.sendChannel1MIDI();
+        PRESET_MANAGER.currentPreset.sendChannel2MIDI();
         showMessage('Set Channel II sliders to ' + CURRENT_TONE_DOWN[0].toUpperCase().replace('-\n', '-').replace('\n', ' '));
     }
 }
