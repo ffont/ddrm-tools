@@ -5,103 +5,43 @@
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-
-	<link rel="stylesheet" href="3rdparty/bootstrap.min.css">
-	<link rel="stylesheet" href="3rdparty/bootstrap-slider.min.css">
 	<link rel="stylesheet" href="all.css">
 
 	<title>DDRM CS80 Tone Selector</title>
 </head>
 
-<body onload="init();">
+<body>
 
-	<div id="header">
-		<div id="aboutButton"><a href="javascript:void(0);" onclick="showSettingsModal()">help</a></div>
-		<img src="logo.svg" alt="Deckard's Dream CS80 Tone Selector" title="Deckard's Dream CS80 Tone Selector" draggable="false"/>
+	<div>
+		<img src="logo.svg" alt="Deckard's Dream CS80 Tone Selector" title="Deckard's Dream CS80 Tone Selector" style="display: block;margin-left: auto;margin-right: auto;width:350px;margin-top:50px;"/>
 	</div>
 	
-	<div class="wrapper">
-		<table id="buttonGrid"></table>
+	<div style="margin: auto;width: 900px;padding: 10px;color:white;">
+		<p><b>About</b></p>
+		<p>
+			This <a href="https://www.youtube.com/watch?v=Yv4EADAHwOA" target="_blank">CS80-like tone slector</a> allows you to
+			use the presetting system of CS80 in DDRM.
+			Simply <b>click on the buttons</b> of the upper row and lower row to configure slider positions for channel I and II
+			respectively.
+			Have fun!
+		</p>
+		<p>
+			DDRM CS80 Tone Selector communicates with DDRM via MIDI. Make sure your DDRM is <b>connected to the computer and can
+				receive MIDI messages</b>.
+		</p>
+		<br>
+		<p><b>Credits</b></p>
+		<p>
+			The DDRM CS80 Tone Selector has been created by <a href="https://ffont.github.io/" target="_blank">Frederic Font</a>
+			using the amazing
+			CS80 DDRM presets programmed by <a href="https://soundcloud.com/paul-schilling" target="_blank">Paul Shiling</a>.
+			Without Paul's presets this would have not been possible at all Thanks!.
+		</p>
+		<br>
 	</div>
-	<div id="messagesOut"></div>
 	
-	<div id="settingsModal" style="display:none;">
-		<div id="innerModal">
-			<img src="logo.svg" alt="Deckard's Dream CS80 Tone Selector" title="Deckard's Dream CS80 Tone Selector" draggable="false" />
-			<br><br>
-			<p><b>About</b></p>
-			<p>
-				This <a href="https://www.youtube.com/watch?v=Yv4EADAHwOA" target="_blank">CS80-like tone slector</a> allows you to use the presetting system of CS80 in DDRM.
-				Simply <b>click on the buttons</b> of the upper row and lower row to configure slider positions for channel I and II respectively.
-				Have fun!
-			</p>
-			<p>
-				DDRM CS80 Tone Selector communicates with DDRM via MIDI. Make sure your DDRM is <b>connected to the computer and can receive MIDI messages</b> at this port:
-			</p>
-			<div id="midiSettings"></div>
-			<br>
-			<p><b>Credits</b></p>
-			<p>
-				The DDRM CS80 Tone Selector has been created by <a href="https://ffont.github.io/" target="_blank">Frederic Font</a> using the amazing 
-				CS80 DDRM presets programmed by <a href="https://soundcloud.com/paul-schilling" target="_blank">Paul Shiling</a>.
-				Without Paul's presets this would have not been possible at all Thanks!.
-			</p>
-			<br>
-			<a href="javascript:void(0);" onclick="hideSettingsModal()">close</a>
-		</div>
-	</div>
-
-	<div id="bottomPanel">
-		<div id="synthControls"></div>
-	</div>
-
 	<!-- JS -->
-	<script>
-		// This is to avoid problems loading jquery and some other libraries
-		// See https://electronjs.org/docs/faq#i-can-not-use-jqueryrequirejsmeteorangularjs-in-electron
-		window.nodeRequire = require;
-		delete window.require;
-		delete window.exports;
-		delete window.module;
-	</script>
-	<script type='text/javascript' src='3rdparty/jquery.min.js'></script>
-	<script type='text/javascript' src='3rdparty/bootstrap.min.js'></script>
-	<script type='text/javascript' src='3rdparty/bootstrap-slider.min.js'></script>
-	<script type='text/javascript' src='3rdparty/webmidi.min.js'></script>
-	<script type='text/javascript' src='globals.js'></script>
-	<script type='text/javascript' src='utils.js'></script>
-	<script type='text/javascript' src='midi.js'></script>
-	<script type='text/javascript' src='components.js'></script>
-	<script type='text/javascript' src='ui.js'></script>
-	<script type='text/javascript' src='toneselector.js'></script>
 	<script type='text/javascript'>
-	
-		function init() {
-			initMIDI(document.getElementById("midiSettings"));
-			SYNTH_UI_SCALE_FACTOR = 0.6;
-
-			PRESET_MANAGER = new PresetManager();
-			loadBankFromBytesArray("Paul Shilling's CS80 presets", CS80_BANK_BYTES);
-
-			// Init with a preset which has performance controls to "null"
-			var allMidPreset = new Preset("All to middle preset");
-			allMidPreset.init(ALL_MID_PRESET);
-			PRESET_MANAGER.currentPreset = allMidPreset;
-			drawPresetControls();
-
-			drawToneSelector();
-			// Now init tone selector and auto select the default combination
-			//initToneSelector();  // Set default current tone up and tone down
-			//updateChannel1();  // Init channel 1 to current tone up, will send MIDI as well
-			//updateChannel2(); // Init channel 2 to current tone down, will send MIDI as well
-		}
-		function showSettingsModal(){
-			document.getElementById("settingsModal").style.display = "block";
-		}
-
-		function hideSettingsModal() {
-			document.getElementById("settingsModal").style.display = "none";
-		}
 
 	</script>
 </body>
