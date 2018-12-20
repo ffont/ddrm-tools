@@ -40,9 +40,10 @@ label {
 }
 
 #header img {
-	width: 350px;
-	margin-bottom: 5px;
-	margin-left: 90px;
+	width: 317px;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
 }
 
 #header a {
@@ -71,8 +72,9 @@ label {
 }
 
 #aboutButton {
-	float: right;
-	margin-right: 15px;
+	position: absolute;
+	right: 15px;
+	top: 15px;
 }
 
 #midiSettings {

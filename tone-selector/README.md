@@ -3,7 +3,7 @@
 ## About
 
 Deckard's Dream CS80 Tone Selector is a utility tool that allows you to use the presetting system of CS80 in Deckard's Dream synthetizer.
-See [http://ffont.github.io/ddrm-tools/tone-selector/](here) for more info.
+See [https://ffont.github.io/ddrm-tools/tone-selector/](here) for more info.
 
 
 ## Build instructions
