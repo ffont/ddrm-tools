@@ -6,13 +6,13 @@ const N_BYTES_PER_PRESET = 98;
 
 // UI base sizes
 const CONTROL_WIDTH = 60;
-const CONTROL_HEIGHT = 180;
+const CONTROL_HEIGHT = 175;
 const SLIDER_HEIGHT = 100;
 const CONTROL_LABEL_HEIGHT = 25;
 const CONTROL_LABEL_FONT_SIZE = 10;
 const SWITCH2_HEIGHT = 25;
 const SWITCH3_WIDTH = 30;
-const CONTROL_MARGIN = CONTROL_WIDTH * 0.06;
+const CONTROL_MARGIN = CONTROL_WIDTH * 0.0;
 const CONTROL_SLIDER_MARGIN_TOP = 15;
 const SWITCH2_MARGIN_TOP = 55;
 const SWITCH3_MARGIN_TOP = 57;
@@ -111,6 +111,7 @@ function Control(id, name, section, layoutRow, color, type, nTicks, midiCC, byte
             controlDiv.append(sliderOffOn);
 
         } else if (self.type === CONTROL_TYPE_GLIDE_MODE){
+            controlDiv.style['margin-left'] = `${Math.floor((CONTROL_MARGIN + 15) * SYNTH_UI_SCALE_FACTOR)}px`;
             var switchGlideMode = document.createElement("input");
             switchGlideMode.type = 'text';
             switchGlideMode.id = self.inputElementID;
@@ -118,7 +119,7 @@ function Control(id, name, section, layoutRow, color, type, nTicks, midiCC, byte
             self.dataSliderID = self.inputElementID + '-SliderOffOn';
             switchGlideMode.setAttribute('data-slider-id', self.dataSliderID);
             switchGlideMode.setAttribute('data-slider-min', self.valueMin);
-            switchGlideMode.setAttribute('data-slider-max', self.valueMax);
+            switchGlideMode.setAttribute('data-slider-max', self.valueMax - 1);  // This is so that handle stays right in the middle
             switchGlideMode.setAttribute('data-slider-step', 127);
             switchGlideMode.setAttribute('data-slider-handle', 'square');
             switchGlideMode.setAttribute('data-slider-value', self.getValue());
@@ -190,30 +191,11 @@ function Control(id, name, section, layoutRow, color, type, nTicks, midiCC, byte
             self.sliderUI.setValue(self.getValue());
             self.sliderUI.sliderElem.style['width'] = `${SWITCH3_WIDTH}px`; // NOTE: don't scale here //`${Math.floor(SWITCH2_HEIGHT * SYNTH_UI_SCALE_FACTOR)}px`;
             self.sliderUI.sliderElem.style['margin-top'] = `${Math.floor(SWITCH3_MARGIN_TOP * SYNTH_UI_SCALE_FACTOR)}px`;
-            self.sliderUI.sliderElem.style['margin-right'] = `10px`;
         }
     }
     this.updateUI = function() {
-        if (self.type === CONTROL_TYPE_SLIDER){
+        if ((self.type === CONTROL_TYPE_SLIDER) || (self.type === CONTROL_TYPE_SWITCH_OFF_ON) || (self.type === CONTROL_TYPE_GLIDE_MODE)){
             self.sliderUI.setValue(self.getValue());
-
-        } else if (self.type === CONTROL_TYPE_SWITCH_OFF_ON){
-            var switchOffOn = document.getElementById(self.inputElementID);
-            if (self.getMIDIValue() >= 65){  // Follow DDRM MIDI spec
-                switchOffOn.selectedIndex = 0;  // Set to Off
-            } else {
-                switchOffOn.selectedIndex = 1;  // Set to On
-            }
-
-        } else if (self.type === CONTROL_TYPE_GLIDE_MODE){
-            var switchGlideMode = document.getElementById(self.inputElementID);
-            if (self.getMIDIValue() < 32){ // Follow DDRM MIDI spec
-                switchGlideMode.selectedIndex = 0;  // Set to Portamento
-            } else if (self.getMIDIValue() >= 32 && self.getMIDIValue() < 85){
-                switchGlideMode.selectedIndex = 1;  // Set to None
-            } else if (self.getMIDIValue() >= 85){
-                switchGlideMode.selectedIndex = 2;  // Set to Glissando
-            }
         }
     }
     this.oninput = function() {
@@ -328,6 +310,7 @@ function Preset(name, author, categories, timestamp, id) {
             if (control.layoutRow === layoutRow) {
                 var controlFrom = presetFrom.controls[i];
                 control.setValue(controlFrom.getValue(), false);
+                control.updateUI();
             }
         }
     }

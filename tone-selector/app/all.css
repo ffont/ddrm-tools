@@ -31,7 +31,7 @@ label {
 }
 
 #header {
-	height: 115px;
+	height: 100px;
 	font-size: 12px;
 	padding-top: 15px;
 	width: 100%;
@@ -54,7 +54,8 @@ label {
 	position: fixed;
 	opacity: 0.8;
 	text-align: center;
-	padding: 10px;
+	padding-top: 10px;
+	padding-bottom: 10px;
 	background-color: #222;
 	color: white;
 	overflow: scroll;
@@ -144,7 +145,7 @@ label {
 }
 
 #mainControlsWrapper {
-	overflow: scroll;
+	overflow: hidden;
 	color: white;
 }
 
@@ -306,5 +307,5 @@ h1 {text-align: center;margin-bottom:40px;font-weight: 400;}
 #messagesOut {
 	color: white;
     text-align: center;
-    margin-top: 20px;
+    margin-top: 14px;
 }
