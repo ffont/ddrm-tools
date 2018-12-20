@@ -1,0 +1,42 @@
+{
+  "name": "ddrm-cs80-tone-selector",
+  "productName": "DDRM CS80 Tone Selector",
+  "version": "1.0.0",
+  "description": "CS80-like tone selector for DDRM",
+  "author": "Frederic Font",
+  "scripts": {
+    "pack": "electron-builder -mw --dir",
+    "dist": "electron-builder -mw",
+    "pack_mac": "electron-builder -m --dir",
+    "dist_mac": "electron-builder -m",
+    "pack_win": "electron-builder -w --dir",
+    "dist_win": "electron-builder -w"
+  },
+  "main": "./electron_app/main.js",
+  "build": {
+    "appId": "DDRMCS80TONESELECTOR",
+    "mac": {
+      "category": "public.app-category.music",
+      "icon": "./electron_app/assets/icons/mac/icon.icns"
+    },
+    "win": {
+      "target": "portable",
+      "icon": "./electron_app/assets/icons/win/icon.ico"
+    },
+    "directories": {
+      "output": "./electron_app/dist/"
+    },
+    "files": [
+      "./electron_app/main.js",
+      {
+        "from": "./app/",
+        "to": "."
+      }
+    ]
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "electron": "latest",
+    "electron-builder": "latest"
+  }
+}
