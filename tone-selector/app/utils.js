@@ -155,3 +155,11 @@ function rangeOnOff(value, midiValue, normValue){
 		return 'OFF';
 	}
 }
+
+function rangeSustain12(value, midiValue, normValue) {
+	if (normValue <= 0.5) {
+		return 'I';
+	} else {
+		return 'II';
+	}
+}
