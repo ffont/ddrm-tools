@@ -1,6 +1,6 @@
 # Deckard's Dream DIY synth (unofficial) interactive build guide
 
-Open the interactive build guide here: https://ffont.github.io/ddrm-interactive-build-guide.
+Open the interactive build guide here: https://ffont.github.io/ddrm-tools/interactive-build-guide.
 
 Info about Deckard's Dream DIY synth: http://www.deckardsdream.com/.
 
